@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Attendance" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ced95029-b569-4027-895c-af2843a4e088">
+	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true"/>
+	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style backcolor="#E6DAC3"/>
+		</conditionalStyle>
+	</style>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="fullname.fullName" class="java.lang.String"/>
+	<field name="presentDay" class="java.lang.Double"/>
+	<field name="module.moduleName" class="java.lang.String"/>
+	<field name="clazz.className" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="145" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement style="Column header" x="424" y="0" width="131" height="20" forecolor="#000000" uuid="a33ba346-b41d-411b-b55e-75f6265f2c7b"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Title" x="0" y="0" width="555" height="62" uuid="c079cdb2-ea3e-491f-88b0-2f7cecbd8fc1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="34"/>
+				</textElement>
+				<text><![CDATA[Wedemy Elearning]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="47" width="555" height="42" uuid="9513aeb7-c6b0-425f-a1ce-c5ffe65ec657"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14"/>
+				</textElement>
+				<text><![CDATA[Powered by Lawencon]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="66" width="555" height="42" uuid="3c9c62f2-dae3-4667-802a-e588059910bb"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14"/>
+				</textElement>
+				<text><![CDATA[Jalan Casablanca Kav. 18, Jakarta 12870. Phone : +62218317113]]></text>
+			</staticText>
+			<frame>
+				<reportElement mode="Opaque" x="0" y="89" width="555" height="24" forecolor="#D0B48E" backcolor="#F2EBDF" uuid="598d5450-1ae0-43e7-836e-bd002cfbe5ff"/>
+			</frame>
+			<image>
+				<reportElement x="7" y="2" width="90" height="74" uuid="a6fd6450-0674-4774-8912-6e6c8efd4e67"/>
+				<imageExpression><![CDATA["report/logo-02.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="0" y="116" width="555" height="24" uuid="36e55311-83ff-42a7-9657-fe5a5196b1ab"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Laporan Kehadiran]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="55" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="-3" width="100" height="30" uuid="8e8d59e6-af83-4045-afd4-22b052dbcc22"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nama Kelas : ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="25" width="555" height="2" uuid="92b89c94-253d-4503-af0c-822cb1bdbe77"/>
+			</line>
+			<textField>
+				<reportElement x="80" y="-3" width="139" height="30" uuid="0a300e02-0983-4aa2-b564-5b68218db7a0"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{clazz.className}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="50" width="555" height="1" uuid="f5cdabe3-28b9-45ed-9035-9ee9aa8dbf05"/>
+			</line>
+			<staticText>
+				<reportElement x="10" y="27" width="60" height="20" uuid="063d5e6a-25b1-4971-9cb8-cd906e16bdf4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="155" y="23" width="100" height="30" uuid="bf6a5b6c-b997-4fb0-8bc3-f63da32ca0ab"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nama Lengkap]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="365" y="23" width="161" height="30" uuid="fa91b228-8c18-45da-80f1-9628871bac03"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Presentase Kehadiran (%)]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="156" y="-5" width="100" height="30" uuid="cf9f6caf-fdad-44ec-aa17-a7236978dc6b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fullname.fullName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="394" y="-2" width="102" height="26" uuid="052a6833-e6bd-46a6-83c2-5f7c6b958a8e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{presentDay}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="8" y="1" width="64" height="21" uuid="9d1c690d-26b5-4e63-b2d1-33bbc31bdb53"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="22" width="555" height="2" uuid="749c891b-0cb3-408c-a188-f26faa20b348"/>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-21" y="1" width="597" height="24" forecolor="#D0B48E" backcolor="#F2EBDF" uuid="183682bc-d976-4756-83e0-6625a3f98ed1"/>
+				<textField evaluationTime="Report">
+					<reportElement style="Column header" x="533" y="0" width="40" height="20" forecolor="#736343" uuid="0193f9b3-1559-491a-8580-b6988863b6a1"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Column header" x="453" y="0" width="80" height="20" forecolor="#736343" uuid="d00b105e-494b-418b-8ac9-8b1b4824f4f0"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,4 @@
+FROM nginx:latest
+
+COPY wedemy_frontend/dist/homepage/. /usr/share/nginx/html
+

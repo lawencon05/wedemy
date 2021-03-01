@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ScoreReportParticipant" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="0" uuid="e9bb1a27-f975-4aa4-98f9-75524c5daafa">
+	<style name="Title" fontName="Arial" fontSize="26" isBold="true"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#FFFFFF" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="idAssignmentSubmission.idParticipant.idProfile.fullName" class="java.lang.String"/>
+	<field name="idAssignmentSubmission.idDetailModuleRegistration.idModuleRegistration.idDetailClass.idClass.className" class="java.lang.String"/>
+	<field name="score" class="java.lang.Double"/>
+	<field name="idAssignmentSubmission.idDetailModuleRegistration.idModuleRegistration.idDetailClass.idClass.code" class="java.lang.String"/>
+	<field name="idAssignmentSubmission.idDetailModuleRegistration.idModuleRegistration.idDetailClass.idClass.idTutor.idProfile.fullName" class="java.lang.String"/>
+	<background>
+		<band height="822" splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="246" splitType="Stretch">
+			<staticText>
+				<reportElement style="Title" x="151" y="30" width="243" height="70" uuid="41a8eb3a-49c6-4b09-9e33-a1eddd12345d"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="54" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Wedemy]]></text>
+			</staticText>
+			<image>
+				<reportElement x="1" y="30" width="140" height="140" uuid="e456334d-26f7-4aa8-839b-cd3d174a9ee1"/>
+				<imageExpression><![CDATA["report/logo-wedemy.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="151" y="100" width="404" height="70" uuid="cfabaf84-1ff3-49e8-9618-d72605b019bf"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14"/>
+				</textElement>
+				<text><![CDATA[Jl. Casablanca No.Kav. 18, RT.4/RW.12, Menteng Atas, Kec. Tebet, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12870]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement style="Column header" x="424" y="0" width="131" height="20" forecolor="#000000" uuid="1d76eb7b-7384-4d48-b93e-0dc8a1c49263"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="226" width="551" height="20" uuid="5d20747b-1b68-47b7-9ec9-3f757f8f65e0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Laporan Nilai]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="134" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="10" width="89" height="20" uuid="ea2f2ad0-21fb-4fff-9001-e1a359ebcc30"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Kode Kelas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="34" width="89" height="20" uuid="c695536c-bfff-44c0-b565-8b34cf0e1417"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nama Kelas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="330" y="10" width="89" height="20" uuid="be324671-c57e-4e65-8c71-927d89f7217f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nama Tutor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="107" width="254" height="20" uuid="97938fda-bbd2-4b82-bc54-c47aea2318bb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rata-rata Nilai]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="46" y="107" width="254" height="20" uuid="add5d80c-4328-4143-aa3a-9e97938c4c7c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Participant]]></text>
+			</staticText>
+			<line>
+				<reportElement x="2" y="130" width="553" height="1" uuid="42d07c16-320b-4285-a75c-c19df25bbdbe"/>
+			</line>
+			<line>
+				<reportElement x="2" y="104" width="553" height="1" uuid="b8b1d6a7-d789-43ca-9ca6-c944850fbc0e"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="107" width="46" height="20" uuid="63e93081-edc4-41c7-902c-75e7310026b4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="90" y="10" width="10" height="20" uuid="8e169bb0-d65a-48e7-86f6-e87ce7de2d3f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="90" y="34" width="10" height="20" uuid="039c9093-49a7-4430-b6d7-ec2b30f93f13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="419" y="10" width="10" height="20" uuid="0295fda8-3c1f-45d9-a0ed-7f5084d245ff"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="34" width="200" height="20" uuid="87ae76cb-2aa1-4a4f-9778-80a2de9d10dc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idAssignmentSubmission.idDetailModuleRegistration.idModuleRegistration.idDetailClass.idClass.className}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="10" width="200" height="20" uuid="fc8795f5-7684-4f4c-9a61-39b9326da566"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idAssignmentSubmission.idDetailModuleRegistration.idModuleRegistration.idDetailClass.idClass.code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="429" y="10" width="126" height="20" uuid="4615c4ce-62c7-4643-9a27-e2518c9ca805"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idAssignmentSubmission.idDetailModuleRegistration.idModuleRegistration.idDetailClass.idClass.idTutor.idProfile.fullName}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="2" width="553" height="1" uuid="43f18bc1-b784-49ed-b444-64829d4bf885"/>
+			</line>
+			<line>
+				<reportElement x="0" y="60" width="553" height="1" uuid="209ebe4e-a2c8-404d-938b-aea16bd096f4"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="80" width="551" height="20" uuid="e90313d4-0ab1-49bb-9a97-3a3b0a6543c8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nilai]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="28" splitType="Stretch">
+			<textField pattern="#,##0.00">
+				<reportElement x="300" y="0" width="254" height="20" uuid="c8ed13d4-dcd4-44cb-85a9-83ce51bbcc61">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d17a2363-939f-4733-a184-e0bcf172e454"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{score}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="46" y="0" width="254" height="20" uuid="777633d4-bd7b-4d52-ba67-ed2a825c8dea"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idAssignmentSubmission.idParticipant.idProfile.fullName}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="23" width="553" height="1" forecolor="#808080" uuid="74d278e6-8284-4b99-902c-835a7f5b369a"/>
+			</line>
+			<textField>
+				<reportElement x="0" y="0" width="46" height="20" uuid="65cd23d0-a1f6-488c-be29-6ddcb3ad3379"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="100" splitType="Stretch">
+			<textField>
+				<reportElement x="355" y="70" width="100" height="30" uuid="03d47034-a82d-4b10-8179-9e02ac00767d"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="455" y="70" width="100" height="30" uuid="7ab17b8e-a587-44c7-85b5-9c10bb6a4347"/>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" of " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
