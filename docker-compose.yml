@@ -4,7 +4,7 @@ services:
                 container_name: wedemy_api
                 build:
                         context: .
-                        dockerfile: Dockerfile-backend
+                        dockerfile: Dockerfile-backend2
                 ports:
                         - "9090:8080"
                 depends_on:
@@ -17,6 +17,7 @@ services:
                         dockerfile: Dockerfile-frontend                         
                 ports:
                         - "4200:4200"
+
         postgres:
                 container_name: wedemy_pg
                 image: postgres:13.2-alpine
@@ -26,7 +27,8 @@ services:
                         - POSTGRES_PASSWORD=postgres
                         - POSTGRES_DB=wedemy                
                 ports:
-                        - "5435:5432"                
+                        - "5435:5432"     
+                                   
 networks:
         default:
                 name: "wedemy_network"
