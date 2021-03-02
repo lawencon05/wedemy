@@ -1,7 +1,7 @@
 FROM openjdk:11.0.7-jre-slim-buster
 
 ENV HOST_POSTGRES=wedemy_pg
-ENV PORT_POSTGRES=5435
+ENV PORT_POSTGRES=5432
 ENV DB_POSTGRES=wedemy
 ENV USERNAME_POSTGRES=postgres
 ENV PASSWORD_POSTGRES=postgres
@@ -10,5 +10,5 @@ WORKDIR /apps
 
 COPY wedemy_backend/elearning/target/elearning-0.0.1-SNAPSHOT.jar .
 
-CMD ["java","-jar","/apps/elearning-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/apps/elearning-0.0.1-SNAPSHOT.jar"]
 

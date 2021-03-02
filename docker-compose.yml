@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.7"
 services:
         api:
                 container_name: wedemy_api
@@ -6,7 +6,7 @@ services:
                         context: .
                         dockerfile: Dockerfile-backend
                 ports:
-                        - "8080:8080"
+                        - "9090:8080"
                 depends_on:
                         - postgres
 
@@ -14,11 +14,9 @@ services:
                 container_name: wedemy_web
                 build:
                         context: .
-                        dockerfile: Dockerfile-frontend
-                expose:
-                        - "80"
+                        dockerfile: Dockerfile-frontend                         
                 ports:
-                        - "80:80"
+                        - "4200:4200"
         postgres:
                 container_name: wedemy_pg
                 image: postgres:13.2-alpine
@@ -26,12 +24,9 @@ services:
                         - ./wedemy.sql:/docker-entrypoint-initdb.d/wedemy.sql
                 environment:
                         - POSTGRES_PASSWORD=postgres
-                        - POSTGRES_DB=wedemy
-                expose:
-                        - "5435"
+                        - POSTGRES_DB=wedemy                
                 ports:
-                        - "5435:5435"
-                command: -p 5435
+                        - "5435:5432"                
 networks:
         default:
                 name: "wedemy_network"

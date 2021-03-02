@@ -1,4 +1,4 @@
-### Wedemy App
+# Wedemy App
 This project is for Automated Testing (API and Web) purpose.
 
 ## Prerequisites

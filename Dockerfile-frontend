@@ -1,4 +1,14 @@
-FROM nginx:latest
+FROM node:15.9.0-alpine3.13
 
-COPY wedemy_frontend/dist/homepage/. /usr/share/nginx/html
+EXPOSE 4200
 
+WORKDIR /apps
+
+COPY wedemy_frontend/package-lock.json .
+COPY wedemy_frontend/package.json .
+COPY wedemy_frontend/ .
+
+RUN npm install --quiet
+RUN npm install -g @angular/cli
+
+CMD ["ng", "serve", "--host", "0.0.0.0"]
