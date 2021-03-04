@@ -16,7 +16,7 @@ public interface ClassEnrollmentsDao {
 
 	ClassEnrollments getClassEnrollmentById(String id) throws Exception;
 
-	ClassEnrollments getClassEnrollmentByIdDtlClassAndIdUser(String idDtlClass, String idUser);
+	ClassEnrollments getClassEnrollmentByIdDtlClassAndIdUser(String idDtlClass, String idUser) throws Exception;
 
 	Integer getTotalParticipantsByIdDtlClass(String id) throws Exception;
 

@@ -13,7 +13,7 @@ public interface ClassEnrollmentService {
 
 	ClassEnrollments getById(String id) throws Exception;
 
-	ClassEnrollments getByIdDtlClassAndIdParticipant(String idDtlClass, String idUser);
+	ClassEnrollments getByIdDtlClassAndIdParticipant(String idDtlClass, String idUser) throws Exception;
 
 	Integer getTotalParticipantsByIdDtlClass(String id) throws Exception;
 

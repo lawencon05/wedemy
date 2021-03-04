@@ -44,7 +44,7 @@ public class ClassEnrollmentServiceImpl extends ElearningBaseServiceImpl impleme
 	}
 
 	@Override
-	public ClassEnrollments getByIdDtlClassAndIdParticipant(String idDtlClass, String idUser) {
+	public ClassEnrollments getByIdDtlClassAndIdParticipant(String idDtlClass, String idUser) throws Exception {
 		return classEnrollmentDao.getClassEnrollmentByIdDtlClassAndIdUser(idDtlClass, idUser);
 	}
 

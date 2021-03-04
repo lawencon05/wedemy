@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -49,8 +50,8 @@ public class BaseDaoImpl<T extends Serializable> {
 		return clazz.getAnnotation(Table.class).name();
 	}
 
-	protected T getById(final String id) {
-		return em().find(clazz, id);
+	protected T getById(final String id) throws Exception {
+		return Optional.ofNullable(em().find(clazz, id)).orElseThrow(Exception::new) ;
 	}
 
 	protected List<T> getAll() {
@@ -139,7 +140,7 @@ public class BaseDaoImpl<T extends Serializable> {
 		em().remove(entity);
 	}
 
-	protected boolean isIdExist(final String entityId) {
+	protected boolean isIdExist(final String entityId) throws Exception {
 		if (getById(entityId) == null) {
 			return false;
 		} else {
@@ -198,11 +199,11 @@ public class BaseDaoImpl<T extends Serializable> {
 		ConnHandler.rollback();
 	}
 
-	protected <C> TypedQuery<C> createQuery(String sql, Class<C> clazz) {
+	protected <C> TypedQuery<C> createQuery(String sql, Class<C> clazz) throws Exception {
 		return em().createQuery(sql, clazz);
 	}
 
-	protected Query createNativeQuery(String sql) {
+	protected Query createNativeQuery(String sql) throws Exception {
 		return em().createNativeQuery(sql);
 	}
 	

@@ -37,7 +37,7 @@ public class ClassEnrollmentsDaoImpl extends ElearningBaseDaoImpl<ClassEnrollmen
 	}
 
 	@Override
-	public ClassEnrollments getClassEnrollmentByIdDtlClassAndIdUser(String idDtlClass, String idUser) {
+	public ClassEnrollments getClassEnrollmentByIdDtlClassAndIdUser(String idDtlClass, String idUser) throws Exception {
 		List<ClassEnrollments> listResult = new ArrayList<>();
 		String sql = sqlBuilder("SELECT id FROM t_r_class_enrollments WHERE id_dtl_class = ?1 AND id_participant =?2")
 				.toString();
