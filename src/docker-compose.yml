@@ -2,7 +2,9 @@ version: "3.7"
 services:
         api:
                 container_name: w_api
-                image: lawencon05/wedemy_api:1.0                
+                build:
+                        context: .
+                        dockerfile: Dockerfile-backend
                 ports:
                         - "9090:8080"
                 depends_on:
@@ -10,13 +12,17 @@ services:
 
         web:
                 container_name: w_web
-                image: lawencon05/wedemy_web:1.0              
+                build:
+                        context: .
+                        dockerfile: Dockerfile-frontend
                 ports:
-                        - "90:80"
+                        - "4200:4200"
 
         db:
                 container_name: w_db
-                image: lawencon05/wedemy_db:1.0               
+                build:
+                        context: .
+                        dockerfile: Dockerfile-db
                 ports:
                         - "5435:5432"
 

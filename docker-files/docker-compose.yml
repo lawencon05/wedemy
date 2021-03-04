@@ -1,0 +1,34 @@
+version: "3.7"
+services:
+        api:
+                container_name: w_api
+                image: lawencon05/wedemy_api:1.0
+                build:
+                        context: .
+                        dockerfile: docker-files/backend/Dockerfile
+                ports:
+                        - "9090:8080"
+                depends_on:
+                        - db
+
+        web:
+                container_name: w_web
+                image: lawencon05/wedemy_web:1.0
+                build:
+                        context: .
+                        dockerfile: docker-files/frontend/Dockerfile
+                ports:
+                        - "90:80"
+
+        db:
+                container_name: w_db
+                image: lawencon05/wedemy_db:1.0
+                build:
+                        context: .
+                        dockerfile: docker-files/db/Dockerfile
+                ports:
+                        - "5435:5432"
+
+networks:
+        default:
+                name: "wedemy_network"
