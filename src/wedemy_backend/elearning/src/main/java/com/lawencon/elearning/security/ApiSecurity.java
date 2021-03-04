@@ -31,7 +31,6 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeRequests().anyRequest().authenticated();
-//		.and().httpBasic();
 
 		// authentication
 		http.addFilter(new AuthenticationFilter(super.authenticationManager(), usersService));
@@ -48,7 +47,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers(HttpMethod.POST, "/user", "/role")
-				.antMatchers(HttpMethod.GET, "/detail-class/**/", "/class/user")
+				.antMatchers(HttpMethod.GET, "/detail-class/**/", "/class/user", "/swagger-ui/**", "/v3/api-docs/**")
 				.antMatchers(HttpMethod.PATCH, "/user/forget-password");
 	}
 
@@ -62,6 +61,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
 						HttpMethod.GET.name(), HttpMethod.PATCH.name(), HttpMethod.DELETE.name(),
 						HttpMethod.PUT.name());
 			}
+
 		};
 	}
 
