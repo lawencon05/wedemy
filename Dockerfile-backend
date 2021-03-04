@@ -1,6 +1,6 @@
 FROM adoptopenjdk/maven-openjdk11
 
-ENV HOST_POSTGRES=wedemy_pg
+ENV HOST_POSTGRES=w_db
 ENV PORT_POSTGRES=5432
 ENV DB_POSTGRES=wedemy
 ENV USERNAME_POSTGRES=postgres
