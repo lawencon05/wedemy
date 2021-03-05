@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lawencon.base.BaseServiceImpl;
+import com.lawencon.elearning.config.ElearningException;
 import com.lawencon.elearning.dao.SubmissionStatusDao;
 import com.lawencon.elearning.model.SubmissionStatus;
 
 @Service
-public class SubmissionStatusServiceImpl extends BaseServiceImpl implements SubmissionStatusService {
+public class SubmissionStatusServiceImpl extends ElearningBaseServiceImpl implements SubmissionStatusService {
 
 	@Autowired
 	private SubmissionStatusDao submissionStatusDao;
@@ -60,19 +60,26 @@ public class SubmissionStatusServiceImpl extends BaseServiceImpl implements Subm
 		return submissionStatusDao.getAllSubmissionStatus();
 	}
 
-	private void validateInsert(SubmissionStatus submissionStatus) throws Exception {
-		if (submissionStatus.getCode() == null || submissionStatus.getCode().trim().equals("")) {
-			throw new Exception("Kode status tidak boleh kosong");
-		} else {
-			SubmissionStatus submissionStat = getByCode(submissionStatus.getCode());
-			if (submissionStat != null) {
-				throw new Exception("Kode status sudah ada");
-			}
-			if (submissionStatus.getSubmissionStatusName() == null
-					|| submissionStatus.getSubmissionStatusName().trim().equals("")) {
-				throw new Exception("Nama status tidak boleh kosong");
-			}
-		}
+	private void validateInsert(SubmissionStatus submissionStatus) throws Exception, ElearningException {
+		verifyNullAndEmptyString(submissionStatus.getCode(), "Kode status tidak boleh kosong");
+		verifyNullAndEmptyString(submissionStatus.getSubmissionStatusName(), "Nama status tidak boleh kosong");
+
+		SubmissionStatus submissionStat = getByCode(submissionStatus.getCode());
+		verifyNull(!verifyNull(submissionStat) ? null : false, "Kode status sudah ada");
+
+//		===== Before =====
+//		if (submissionStatus.getCode() == null || submissionStatus.getCode().trim().equals("")) {
+//			throw new Exception("Kode status tidak boleh kosong");
+//		} else {
+//			SubmissionStatus submissionStat = getByCode(submissionStatus.getCode());
+//			if (submissionStat != null) {
+//				throw new Exception("Kode status sudah ada");
+//			}
+//			if (submissionStatus.getSubmissionStatusName() == null
+//					|| submissionStatus.getSubmissionStatusName().trim().equals("")) {
+//				throw new Exception("Nama status tidak boleh kosong");
+//			}
+//		}
 	}
 
 	private void validateUpdate(SubmissionStatus submissionStatus) throws Exception {

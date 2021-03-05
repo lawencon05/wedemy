@@ -46,8 +46,8 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers(HttpMethod.POST, "/user", "/role")
-				.antMatchers(HttpMethod.GET, "/detail-class/**/", "/class/user", "/swagger-ui/**", "/v3/api-docs/**")
+		web.ignoring().antMatchers(HttpMethod.POST, "/user", "/role").antMatchers(HttpMethod.GET, "/detail-class/**/",
+				"/class/user", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
 				.antMatchers(HttpMethod.PATCH, "/user/forget-password");
 	}
 

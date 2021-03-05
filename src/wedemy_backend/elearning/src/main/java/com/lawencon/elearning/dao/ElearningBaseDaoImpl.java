@@ -2,7 +2,6 @@ package com.lawencon.elearning.dao;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 import com.lawencon.base.BaseDaoImpl;
 
@@ -16,12 +15,12 @@ public class ElearningBaseDaoImpl<T extends Serializable> extends BaseDaoImpl<T>
 		return sql;
 	}
 
-	protected T resultCheck(List<T> model) throws Exception {
-		return Optional.ofNullable(model.size() > 0 ? model.get(0) : null).orElseThrow(Exception::new);
+	protected T resultCheck(List<T> list) throws Exception {
+		return list != null && list.size() > 0 ? list.get(0) : null;
 	}
 
 	protected List<T> resultCheckList(List<T> list) throws Exception {
-		return Optional.ofNullable(list.size() > 0 ? list : null).orElseThrow(Exception::new);
+		return list.size() > 0 ? list : null;
 	}
 
 }

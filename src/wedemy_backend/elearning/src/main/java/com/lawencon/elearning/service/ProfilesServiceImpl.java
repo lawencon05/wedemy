@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lawencon.base.BaseServiceImpl;
+import com.lawencon.elearning.config.ElearningException;
 import com.lawencon.elearning.constant.ExtensionImage;
 import com.lawencon.elearning.dao.ProfilesDao;
 import com.lawencon.elearning.model.AssignmentSubmissions;
@@ -18,7 +18,7 @@ import com.lawencon.elearning.model.Profiles;
 import com.lawencon.util.Callback;
 
 @Service
-public class ProfilesServiceImpl extends BaseServiceImpl implements ProfilesService {
+public class ProfilesServiceImpl extends ElearningBaseServiceImpl implements ProfilesService {
 
 	@Autowired
 	private ProfilesDao profilesDao;
@@ -50,8 +50,8 @@ public class ProfilesServiceImpl extends BaseServiceImpl implements ProfilesServ
 			} else {
 				profile.setIdFile(profilePict);
 			}
-			profile.setCreatedAt(profilesDao.getProfileById(profile.getId()).getCreatedAt());
-			profile.setCreatedBy(profilesDao.getProfileById(profile.getId()).getCreatedBy());
+			profile.setCreatedAt(profilesDao.getProfileById(profile.getId(), null).getCreatedAt());
+			profile.setCreatedBy(profilesDao.getProfileById(profile.getId(), null).getCreatedBy());
 			profilesDao.update(profile, () -> {
 				validateUpdate(profile);
 			});
@@ -79,7 +79,9 @@ public class ProfilesServiceImpl extends BaseServiceImpl implements ProfilesServ
 
 	@Override
 	public Profiles getById(String id) throws Exception {
-		return profilesDao.getProfileById(id);
+		Profiles p = profilesDao.getProfileById(id, () -> validateGet(id));
+		verifyNull(p, "Id tidak ditemukan");
+		return p;
 	}
 
 	@Override
@@ -110,6 +112,10 @@ public class ProfilesServiceImpl extends BaseServiceImpl implements ProfilesServ
 	@Override
 	public List<Profiles> getAll() throws Exception {
 		return profilesDao.getAllProfiles();
+	}
+
+	private void validateGet(String id) throws ElearningException {
+		verifyNullAndEmptyString(id, "Id tidak boleh kosong");
 	}
 
 	private void validateUpdate(Profiles profile) throws Exception {
@@ -152,7 +158,7 @@ public class ProfilesServiceImpl extends BaseServiceImpl implements ProfilesServ
 					throw new Exception("Nomor identitas tidak sesuai!");
 				} else {
 					String regex = "\\d+";
-					if(!profile.getIdNumber().matches(regex)) {
+					if (!profile.getIdNumber().matches(regex)) {
 						throw new Exception("Nomor identitas harus angka");
 					}
 				}

@@ -19,7 +19,7 @@ public interface ProfilesDao {
 
 	void softDeleteProfileById(String id, String idUser) throws Exception;
 
-	Profiles getProfileById(String id) throws Exception;
+	Profiles getProfileById(String id, Callback before) throws Exception;
 
 	Profiles getProfileByEmail(String email) throws Exception;
 

@@ -38,8 +38,8 @@ public class ProfilesDaoImpl extends ElearningBaseDaoImpl<Profiles> implements P
 	}
 
 	@Override
-	public Profiles getProfileById(String id) throws Exception {
-		return getById(id);
+	public Profiles getProfileById(String id, Callback before) throws Exception {
+		return getById(id, before);
 	}
 
 	@Override
