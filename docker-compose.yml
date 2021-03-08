@@ -2,7 +2,7 @@ version: "3.7"
 services:
         api:
                 container_name: w_api
-                image: lawencon05/wedemy_api:1.0                
+                image: lawencon05/wedemy_api:1.1                
                 ports:
                         - "9090:8080"
                 depends_on:
