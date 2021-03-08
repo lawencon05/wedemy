@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lawencon.base.BaseServiceImpl;
 import com.lawencon.elearning.constant.ExtensionImage;
 import com.lawencon.elearning.dao.ClassesDao;
 import com.lawencon.elearning.helper.ClassInput;
@@ -17,7 +16,7 @@ import com.lawencon.elearning.model.Files;
 import com.lawencon.elearning.model.Users;
 
 @Service
-public class ClassesServiceImpl extends BaseServiceImpl implements ClassesService {
+public class ClassesServiceImpl extends ElearningBaseServiceImpl implements ClassesService {
 
 	@Autowired
 	private ClassesDao classesDao;
@@ -47,8 +46,7 @@ public class ClassesServiceImpl extends BaseServiceImpl implements ClassesServic
 				thumbnailImg.setName(file.getOriginalFilename());
 				filesService.insert(thumbnailImg);
 				clazz.setIdFile(thumbnailImg);
-				classesDao.insert(clazz, () -> 
-				{
+				classesDao.insert(clazz, () -> {
 					validateInsert(clazz);
 					validate(clazz);
 				});
@@ -107,6 +105,12 @@ public class ClassesServiceImpl extends BaseServiceImpl implements ClassesServic
 	public void deleteById(String id, String idUser) throws Exception {
 		try {
 			begin();
+			verifyNullAndEmptyString(id, "Id Class tidak boleh kosong");
+			Classes cls = classesDao.getClassById(id);
+			verifyNull(cls, "Id class tidak ada");
+			verifyNullAndEmptyString(idUser, "Id User tidak boleh kosong");
+			Users user = usersService.getById(idUser);
+			verifyNull(user, "Id User tidak ada");
 			classesDao.softDeleteClassById(id, idUser);
 			List<DetailClasses> dtlClass = dtlClassesService.getAllByIdClass(id);
 			for (DetailClasses dtl : dtlClass) {
@@ -126,7 +130,9 @@ public class ClassesServiceImpl extends BaseServiceImpl implements ClassesServic
 
 	@Override
 	public Classes getById(String id) throws Exception {
-		return classesDao.getClassById(id);
+		Classes clazz = classesDao.getClassById(id);
+		verifyNull(clazz, "Id tidak ditemukan");
+		return clazz;
 	}
 
 	@Override
@@ -153,7 +159,7 @@ public class ClassesServiceImpl extends BaseServiceImpl implements ClassesServic
 	public List<Classes> getAllInactive() throws Exception {
 		return classesDao.getAllInactive();
 	}
-	
+
 	@Override
 	public Classes getByIdDetailClass(String idDetailClass) throws Exception {
 		DetailClasses detailClass = dtlClassesService.getById(idDetailClass);
@@ -172,59 +178,50 @@ public class ClassesServiceImpl extends BaseServiceImpl implements ClassesServic
 				}
 			}
 		}
-		if (clazz.getClassName() == null) {
-			throw new Exception("Nama kelas tidak boleh kosong!");
-		}
-		if (clazz.getDescription() == null) {
-			throw new Exception("Dekripsi kelas tidak boleh kosong!");
-		}
-		if (clazz.getQuota() == null) {
-			throw new Exception("Quota kelas tidak boleh kosong!");
-		}
+		verifyNull(clazz.getClassName(), "Nama kelas tidak boleh kosong!");
+		verifyNull(clazz.getDescription(), "Dekripsi kelas tidak boleh kosong!");
+		verifyNull(clazz.getQuota(), "Quota kelas tidak boleh kosong!");
 	}
 
 	private void validateInsert(Classes clazz) throws Exception {
-		if (clazz.getCode() == null || clazz.getCode().trim().equals("")) {
-			throw new Exception("Kode kelas tidak boleh kosong!");
-		} else {
-			Classes cls = getByCode(clazz.getCode());
-			if (cls != null) {
-				throw new Exception("Kode kelas yang dimasukkan sudah ada!");
-			}
-			if (clazz.getIdTutor() == null) {
-				throw new Exception("Tutor tidak boleh kosong!");
-			} else {
-				Users user = usersService.getByIdNumber(clazz.getIdTutor().getIdProfile().getIdNumber());
-				if (user == null) {
-					throw new Exception("Id Tutor tidak ada!");
-				}
-			}
-		}
+		verifyNull(clazz.getCode(), "Kode kelas tidak boleh kosong!");
+
+		Classes cls = getByCode(clazz.getCode());
+		verifyNull(!verifyNull(cls) ? null : false, "Kode kelas yang dimasukkan sudah ada!");
+
+		verifyNull(clazz.getIdTutor(), "Tutor tidak boleh kosong!");
+
+		Users user = usersService.getByIdNumber(clazz.getIdTutor().getIdProfile().getIdNumber());
+		verifyNull(user, "Id Tutor tidak ada!");
 	}
 
 	private void validateUpdate(Classes clazz) throws Exception {
-		if (clazz.getId() == null || clazz.getId().trim().equals("")) {
-			throw new Exception("Id kelas tidak boleh kosong!");
-		} else {
-			Classes cls = classesDao.getClassById(clazz.getId());
-			if (clazz.getVersion() == null) {
-				throw new Exception("Kelas version tidak boleh kosong!");
-			} else {
-				if (clazz.getVersion() != cls.getVersion()) {
-					throw new Exception("Kelas version tidak sama!");
-				} else {
-					if (clazz.getCode() == null || clazz.getCode().trim().equals("")) {
-						throw new Exception("Kode kelas tidak boleh kosong!");
-					} else {
-						if (!cls.getCode().equalsIgnoreCase(clazz.getCode())) {
-							Classes clz = classesDao.getClassByCode(clazz.getCode());
-							if (clz != null) {
-								throw new Exception("Kode kelas tidak boleh sama");
-							}
-						}
-					}
-				}
-			}
+		verifyNull(clazz.getId(), "Id kelas tidak boleh kosong!");
+
+		Classes cls = classesDao.getClassById(clazz.getId());
+
+		verifyNull(clazz.getVersion(), "Kelas version tidak boleh kosong!");
+
+		if (clazz.getVersion() != cls.getVersion()) {
+			throw new Exception("Kelas version tidak sama!");
 		}
+
+		verifyNull(clazz.getCode(), "Kode kelas tidak boleh kosong!");
+
+		if (!cls.getCode().equalsIgnoreCase(clazz.getCode())) {
+			Classes clz = getByCode(clazz.getCode());
+			verifyNull(!verifyNull(clz) ? null : false, "Kode kelas yang dimasukkan sudah ada!");
+		}
+
+//		if (clazz.getCode() == null || clazz.getCode().trim().equals("")) {
+//			throw new Exception("Kode kelas tidak boleh kosong!");
+//		} else {
+//			if (!cls.getCode().equalsIgnoreCase(clazz.getCode())) {
+//				Classes clz = classesDao.getClassByCode(clazz.getCode());
+//				if (clz != null) {
+//					throw new Exception("Kode kelas tidak boleh sama");
+//				}
+//			}
+//		}
 	}
 }

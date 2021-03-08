@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.Presences;
 import com.lawencon.elearning.service.PresencesService;
@@ -22,11 +20,8 @@ public class PresencesController extends ElearningBaseController {
 	private PresencesService presencesService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody Presences presences) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			Presences presences = obj.readValue(body, Presences.class);
 			presencesService.insert(presences);
 			return responseSuccess(presences, HttpStatus.OK, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {

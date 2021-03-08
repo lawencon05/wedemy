@@ -7,16 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lawencon.base.BaseServiceImpl;
 import com.lawencon.elearning.constant.ExtensionDocument;
 import com.lawencon.elearning.dao.LearningMaterialsDao;
 import com.lawencon.elearning.model.DetailModuleRegistrations;
 import com.lawencon.elearning.model.Files;
 import com.lawencon.elearning.model.LearningMaterialTypes;
 import com.lawencon.elearning.model.LearningMaterials;
+import com.lawencon.elearning.model.Users;
 
 @Service
-public class LearningMaterialsServiceImpl extends BaseServiceImpl implements LearningMaterialsService {
+public class LearningMaterialsServiceImpl extends ElearningBaseServiceImpl implements LearningMaterialsService {
 
 	@Autowired
 	private LearningMaterialsDao learningMaterialsDao;
@@ -29,6 +29,9 @@ public class LearningMaterialsServiceImpl extends BaseServiceImpl implements Lea
 
 	@Autowired
 	private FilesService filesService;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insert(DetailModuleRegistrations dtlModuleRgs, MultipartFile fileInput) throws Exception {
@@ -92,6 +95,12 @@ public class LearningMaterialsServiceImpl extends BaseServiceImpl implements Lea
 	public void deleteById(String id, String idUser) throws Exception {
 		try {
 			begin();
+			verifyNull(id, "Id Learning Material tidak boleh kosong");
+			LearningMaterials lm = learningMaterialsDao.getMaterialById(id);
+			verifyNull(lm, "Id Learning Material tidak ada");
+			verifyNull(idUser, "Updated by tidak boleh kosong");
+			Users user = userService.getById(idUser);
+			verifyNull(user, "Id User tidak ada");
 			if (checkDelete(id) == false) {
 				learningMaterialsDao.softDeleteMaterialById(id, idUser);
 			} else {
@@ -118,7 +127,7 @@ public class LearningMaterialsServiceImpl extends BaseServiceImpl implements Lea
 	public LearningMaterials getByCode(String code) throws Exception {
 		return learningMaterialsDao.getMaterialByCode(code);
 	}
-	
+
 	@Override
 	public LearningMaterials getByIdDetailModuleRgs(String idDtlModuleRgs) throws Exception {
 		DetailModuleRegistrations detailModuleRgs = dtlModuleRgsService.getDtlModuleRgsById(idDtlModuleRgs);
@@ -132,55 +141,37 @@ public class LearningMaterialsServiceImpl extends BaseServiceImpl implements Lea
 	}
 
 	private void validate(LearningMaterials learningMaterial) throws Exception {
-		if (learningMaterial.getIdLearningMaterialType() == null) {
-			LearningMaterialTypes materialType = learningMaterialTypesService
-					.getById(learningMaterial.getIdLearningMaterialType().getId());
-			if (materialType == null) {
-				throw new Exception("Id tipe bahan ajar tidak ada!");
-			}
-		}
-		if (learningMaterial.getLearningMaterialName() == null
-				|| learningMaterial.getLearningMaterialName().trim().equals("")) {
-			throw new Exception("Nama bahan ajar tidak boleh kosong!");
-		}
-		if (learningMaterial.getDescription() == null || learningMaterial.getDescription().trim().equals("")) {
-			throw new Exception("Deskripsi bahan ajar tidak boleh kosong!");
-		}
+		verifyNull(learningMaterial.getIdLearningMaterialType(), "Learning material type tidak boleh kosong");
+
+		LearningMaterialTypes materialType = learningMaterialTypesService
+				.getById(learningMaterial.getIdLearningMaterialType().getId());
+
+		verifyNull(materialType, "Id tipe bahan ajar tidak ada!");
+
+		verifyNullAndEmptyString(learningMaterial.getLearningMaterialName(), "Nama bahan ajar tidak boleh kosong!");
+
+		verifyNullAndEmptyString(learningMaterial.getDescription(), "Deskripsi bahan ajar tidak boleh kosong!");
 	}
 
 	private void validateInsert(LearningMaterials learningMaterial) throws Exception {
-		if (learningMaterial.getCode() == null || learningMaterial.getCode().trim().equals("")) {
-			throw new Exception("Kode bahan ajar tidak boleh kosong!");
-		} else {
-			LearningMaterials learningMaterials = getByCode(learningMaterial.getCode());
-			if (learningMaterials != null) {
-				throw new Exception("Kode bahan ajar tidak boleh sama!");
-			}
-		}
+		verifyNullAndEmptyString(learningMaterial.getCode(), "Kode bahan ajar tidak boleh kosong!");
+		LearningMaterials learningMaterials = getByCode(learningMaterial.getCode());
+		verifyNull(!verifyNull(learningMaterials) ? null : false, "Kode bahan ajar tidak boleh sama!");
 	}
 
 	private void validateUpdate(LearningMaterials learningMaterial) throws Exception {
-		if (learningMaterial.getId() == null || learningMaterial.getId().trim().equals("")) {
-			throw new Exception("Id kelas tidak boleh kosong!");
-		} else {
-			LearningMaterials lm = getById(learningMaterial.getId());
-			if (learningMaterial.getVersion() == null) {
-				throw new Exception("Kelas version tidak boleh kosong!");
-			} else {
-				if (learningMaterial.getVersion() != lm.getVersion()) {
-					throw new Exception("Kelas version tidak sama!");
-				} 
-				if (learningMaterial.getCode() == null || learningMaterial.getCode().trim().equals("")) {
-					throw new Exception("Kode bahan ajar tidak boleh kosong!");
-				} else {
-					if (!learningMaterial.getCode().equalsIgnoreCase(lm.getCode())) {
-						LearningMaterials learningMaterials = getByCode(learningMaterial.getCode());
-						if (learningMaterials != null) {
-							throw new Exception("Kode bahan ajar tidak boleh sama!");
-						}
-					}
-				}
-			}
+		verifyNullAndEmptyString(learningMaterial.getId(), "Id kelas tidak boleh kosong!");
+
+		LearningMaterials lm = getById(learningMaterial.getId());
+
+		verifyNull(learningMaterial.getVersion(), "Kelas version tidak boleh kosong!");
+		if (learningMaterial.getVersion() != lm.getVersion()) {
+			throw new Exception("Kelas version tidak sama!");
+		}
+		verifyNullAndEmptyString(learningMaterial.getCode(), "Kode bahan ajar tidak boleh kosong!");
+		if (!learningMaterial.getCode().equalsIgnoreCase(lm.getCode())) {
+			LearningMaterials learningMaterials = getByCode(learningMaterial.getCode());
+			verifyNull(!verifyNull(learningMaterials) ? null : false, "Kode bahan ajar tidak boleh sama!");
 		}
 	}
 
@@ -195,10 +186,8 @@ public class LearningMaterialsServiceImpl extends BaseServiceImpl implements Lea
 	}
 
 	private void validateFileLearningMaterial(LearningMaterials learningMaterial) throws Exception {
-		System.out.println("cek type materi" + learningMaterial.getIdFile().getType());
 		String[] type = learningMaterial.getIdFile().getType().split("/");
 		String ext = type[1];
-		System.out.println("extension" + ext);
 		if (ext != null) {
 			if (ext.equalsIgnoreCase(ExtensionDocument.DOC.code) || ext.equalsIgnoreCase(ExtensionDocument.DOCX.code)
 					|| ext.equalsIgnoreCase(ExtensionDocument.PDF.code)

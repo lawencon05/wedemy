@@ -6,15 +6,18 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lawencon.base.BaseServiceImpl;
 import com.lawencon.elearning.dao.ModulesDao;
 import com.lawencon.elearning.model.Modules;
+import com.lawencon.elearning.model.Users;
 
 @Service
-public class ModulesServiceImpl extends BaseServiceImpl implements ModulesService {
+public class ModulesServiceImpl extends ElearningBaseServiceImpl implements ModulesService {
 
 	@Autowired
 	private ModulesDao modulesDao;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insert(Modules module) throws Exception {
@@ -32,6 +35,12 @@ public class ModulesServiceImpl extends BaseServiceImpl implements ModulesServic
 	public void deleteById(String id, String idUser) throws Exception {
 		try {
 			begin();
+			verifyNullAndEmptyString(id, "Id module tidak boleh kosong");
+			Modules modules = modulesDao.getModuleById(id);
+			verifyNull(modules, "Id Module tidak ada");
+			verifyNull(idUser, "Updated by tidak boleh kosong");
+			Users user = userService.getById(idUser);
+			verifyNull(user, "Id User tidak ada");
 			if (validateDelete(id)) {
 				softDeleteById(id, idUser);
 			} else {
@@ -65,40 +74,25 @@ public class ModulesServiceImpl extends BaseServiceImpl implements ModulesServic
 	}
 
 	private void validateInsert(Modules module) throws Exception {
-		if (module.getCode() == null || module.getCode().trim().equals("")) {
-			throw new Exception("Kode Modul tidak boleh kosong");
-		} else {
-			Modules mod = getByCode(module.getCode());
-			if (mod != null) {
-				throw new Exception("Kode Modul sudah ada");
-			}
-			if (module.getModuleName() == null || module.getModuleName().trim().equals("")) {
-				throw new Exception("Nama Modul tidak boleh kosong");
-			}
-		}
+		verifyNullAndEmptyString(module.getCode(), "Kode Modul tidak boleh kosong");
+		Modules mod = getByCode(module.getCode());
+		verifyNull(!verifyNull(mod), "Kode Modul sudah ada");
+
+		verifyNullAndEmptyString(module.getModuleName(), "Nama Modul tidak boleh kosong");
 	}
 
 	private void validateUpdate(Modules module) throws Exception {
-		if (module.getId() == null || module.getId().trim().equals("")) {
-			throw new Exception("Id Modul tidak boleh kosong");
-		} else {
-			Modules modu = getById(module.getId());
-			if (module.getCode() == null || module.getCode().trim().equals("")) {
-				throw new Exception("Kode Modul tidak boleh kosong");
-			} else {
-				if (!modu.getCode().equals(module.getCode())) {
-					Modules mod = getByCode(module.getCode());
-					if (mod != null) {
-						throw new Exception("Kode Modul sudah ada");
-					}
-				}
-				if (module.getModuleName() == null || module.getModuleName().trim().equals("")) {
-					throw new Exception("Nama Modul tidak boleh kosong");
-				}
-				if (modu.getVersion() != module.getVersion()) {
-					throw new Exception("Modul yang diedit telah diperbarui, silahkan coba lagi");
-				}
-			}
+		verifyNullAndEmptyString(module.getId(), "Id Modul tidak boleh kosong");
+		Modules modu = getById(module.getId());
+		verifyNullAndEmptyString(module.getCode(), "Kode Modul tidak boleh kosong");
+		if (!modu.getCode().equals(module.getCode())) {
+			Modules mod = getByCode(module.getCode());
+			verifyNull(!verifyNull(mod), "Kode Modul sudah ada");
+		}
+		verifyNullAndEmptyString(module.getModuleName(), "Nama Modul tidak boleh kosong");
+		
+		if (modu.getVersion() != module.getVersion()) {
+			throw new Exception("Modul yang diedit telah diperbarui, silahkan coba lagi");
 		}
 	}
 

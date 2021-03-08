@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.LearningMaterialTypes;
 import com.lawencon.elearning.service.LearningMaterialTypesService;
@@ -28,9 +26,8 @@ public class LearningMaterialTypesController extends ElearningBaseController {
 	private LearningMaterialTypesService lmTypesService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody LearningMaterialTypes lmType) {
 		try {
-			LearningMaterialTypes lmType = new ObjectMapper().readValue(body, LearningMaterialTypes.class);
 			lmTypesService.insert(lmType);
 			return responseSuccess(lmType, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {
@@ -51,11 +48,8 @@ public class LearningMaterialTypesController extends ElearningBaseController {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestBody String body) {
+	public ResponseEntity<?> update(@RequestBody LearningMaterialTypes lmType) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			LearningMaterialTypes lmType = obj.readValue(body, LearningMaterialTypes.class);
 			lmTypesService.update(lmType);
 			LearningMaterialTypes response = lmTypesService.getById(lmType.getId());
 			return responseSuccess(response, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);

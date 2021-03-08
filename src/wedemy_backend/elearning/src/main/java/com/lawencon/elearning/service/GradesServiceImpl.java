@@ -6,15 +6,18 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lawencon.base.BaseServiceImpl;
 import com.lawencon.elearning.dao.GradesDao;
 import com.lawencon.elearning.model.Grades;
+import com.lawencon.elearning.model.Users;
 
 @Service
-public class GradesServiceImpl extends BaseServiceImpl implements GradesService {
+public class GradesServiceImpl extends ElearningBaseServiceImpl implements GradesService {
 
 	@Autowired
 	private GradesDao gradeDao;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insert(Grades grade) throws Exception {
@@ -33,6 +36,12 @@ public class GradesServiceImpl extends BaseServiceImpl implements GradesService 
 	public void deleteById(String id, String idUser) throws Exception {
 		try {
 			begin();
+			verifyNull(id, "Id approvement tidak boleh kosong");
+			Grades grade = gradeDao.getGradeById(id);
+			verifyNull(grade, "Id Grade tidak ada");
+			verifyNull(idUser, "Updated by tidak boleh kosong");
+			Users user = userService.getById(idUser);
+			verifyNull(user, "Id User tidak ada");
 			if (validateDelete(id) == true) {
 				gradeDao.softDeleteGradeById(id, idUser);
 			} else {
@@ -66,51 +75,38 @@ public class GradesServiceImpl extends BaseServiceImpl implements GradesService 
 	}
 
 	private void validateInsert(Grades grade) throws Exception {
-		if (grade.getCode() == null || grade.getCode().trim().equals("")) {
-			throw new Exception("Kode grade tidak boleh kosong");
-		} else {
-			Grades grd = getByCode(grade.getCode());
-			if (grd != null) {
-				throw new Exception("Kode grade sudah ada");
-			} else {
-				if (grade.getMinScore() == null || grade.getMaxScore() == null) {
-					throw new Exception("Minimum dan maximum score harus diisi");
-				} else {
-					if (grade.getMinScore() >= grade.getMaxScore()) {
-						throw new Exception("Minimum score harus lebih kecil dari maximum score");
-					}
-				}
-			}
+		verifyNullAndEmptyString(grade.getCode(), "Kode grade tidak boleh kosong");
+
+		Grades grd = getByCode(grade.getCode());
+		verifyNull(!verifyNull(grd) ? null : false, "Kode grade sudah ada");
+
+		verifyNull(grade.getMinScore(), "Minimum score tidak boleh kosong");
+		verifyNull(grade.getMaxScore(), "Maximum score tidak boleh kosong");
+
+		if (grade.getMinScore() >= grade.getMaxScore()) {
+			throw new Exception("Minimum score harus lebih kecil dari maximum score");
 		}
 	}
 
 	private void validateUpdate(Grades grade) throws Exception {
-		if (grade.getId() == null || grade.getId().trim().equals("")) {
-			throw new Exception("Id grade tidak boleh kosong");
-		} else {
-			Grades grad = getById(grade.getId());
-			if (grade.getCode() == null || grade.getCode().trim().equals("")) {
-				throw new Exception("Kode grade tidak boleh kosong");
-			} else {
-				if (!grad.getCode().equals(grade.getCode())) {
-					Grades grd = getByCode(grade.getCode());
-					if (grd != null) {
-						if (!grd.getCode().equals(grade.getCode())) {
-							throw new Exception("Kode grade sudah ada");
-						}
-					}
-				}
-				if (grade.getMinScore() == null || grade.getMaxScore() == null) {
-					throw new Exception("Minimum dan maximum score harus diisi");
-				} else {
-					if (grade.getMinScore() >= grade.getMaxScore()) {
-						throw new Exception("Minimum score harus lebih kecil dari maximum score");
-					}
-				}
-				if (grade.getVersion() != grad.getVersion()) {
-					throw new Exception("Grade yang diedit telah diperbarui, silahkan coba lagi");
-				}
-			}
+		verifyNullAndEmptyString(grade.getId(), "Id grade tidak boleh kosong");
+
+		Grades grad = getById(grade.getId());
+
+		verifyNullAndEmptyString(grade.getCode(), "Kode grade tidak boleh kosong");
+		if (!grad.getCode().equals(grade.getCode())) {
+			Grades grd = getByCode(grade.getCode());
+			verifyNull(!verifyNull(grd) ? null : false, "Kode grade sudah ada");
+		}
+
+		verifyNull(grade.getMinScore(), "Minimum score tidak boleh kosong");
+		verifyNull(grade.getMaxScore(), "Maximum score tidak boleh kosong");
+
+		if (grade.getMinScore() >= grade.getMaxScore()) {
+			throw new Exception("Minimum score harus lebih kecil dari maximum score");
+		}
+		if (grade.getVersion() != grad.getVersion()) {
+			throw new Exception("Grade yang diedit telah diperbarui, silahkan coba lagi");
 		}
 	}
 

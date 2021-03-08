@@ -6,13 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lawencon.base.BaseServiceImpl;
 //import com.lawencon.elearning.dao.AssignmentTypesDao;
 import com.lawencon.elearning.dao.LearningMaterialTypesDao;
 import com.lawencon.elearning.model.LearningMaterialTypes;
 
 @Service
-public class LearningMaterialTypesServiceImpl extends BaseServiceImpl implements LearningMaterialTypesService {
+public class LearningMaterialTypesServiceImpl extends ElearningBaseServiceImpl implements LearningMaterialTypesService {
 
 	@Autowired
 	private LearningMaterialTypesDao typesDao;
@@ -61,55 +60,36 @@ public class LearningMaterialTypesServiceImpl extends BaseServiceImpl implements
 	}
 
 	private void validateInsert(LearningMaterialTypes learningMaterialTypes) throws Exception {
-		if (learningMaterialTypes.getCode() == null || learningMaterialTypes.getCode().trim().equals("")) {
-			throw new Exception("Kode tipe bahan ajar tidak boleh kosong!");
-		} else {
-			LearningMaterialTypes learningMaterialType = getByCode(learningMaterialTypes.getCode());
-			if (learningMaterialType != null) {
-				throw new Exception("Kode tipe bahan ajar tidak boleh sama!");
-			} else {
-				if (learningMaterialTypes.getLearningMaterialTypeName() == null
-						|| learningMaterialTypes.getLearningMaterialTypeName().trim().equals("")) {
-					throw new Exception("Nama tipe bahan ajar tidak boleh kosong!");
-				}
-			}
-		}
+		verifyNullAndEmptyString(learningMaterialTypes.getCode(), "Kode tipe bahan ajar tidak boleh kosong!");
+		LearningMaterialTypes learningMaterialType = getByCode(learningMaterialTypes.getCode());
+
+		verifyNull(!verifyNull(learningMaterialType), "Kode tipe bahan ajar tidak boleh sama!");
+
+		verifyNullAndEmptyString(learningMaterialTypes.getLearningMaterialTypeName(),
+				"Nama tipe bahan ajar tidak boleh kosong!");
 	}
 
 	private void validateUpdate(LearningMaterialTypes learningMaterialTypes) throws Exception {
-		if (learningMaterialTypes.getId() == null || learningMaterialTypes.getId().trim().equals("")) {
-			throw new Exception("Id tipe bahan ajar tidak boleh kosong!");
-		} else {
-			LearningMaterialTypes learningType = getById(learningMaterialTypes.getId());
-			if (learningType == null) {
-				throw new Exception("Id tipe bahan ajar tidak ada!");
-			} else {
-				if (learningType.getVersion() == null) {
-					throw new Exception("Tipe bahan ajar version tidak boleh kosong!");
-				} else {
-					if (learningMaterialTypes.getVersion() != learningType.getVersion()) {
-						throw new Exception("Tipe bahan ajar version tidak sama!");
-					} else {
-						if (learningMaterialTypes.getCode() == null
-								|| learningMaterialTypes.getCode().trim().equals("")) {
-							throw new Exception("Kode tipe bahan ajar tidak boleh kosong!");
-						} else {
-							if (!learningMaterialTypes.getCode().equalsIgnoreCase(learningType.getCode())) {
-								LearningMaterialTypes lmType = getByCode(learningMaterialTypes.getCode());
-								if (lmType != null) {
-									throw new Exception("Kode tipe bahan ajar tidak boleh sama!");
-								}
-							} else {
-								if (learningMaterialTypes.getLearningMaterialTypeName() == null
-										|| learningMaterialTypes.getLearningMaterialTypeName().trim().equals("")) {
-									throw new Exception("Name tipe bahan ajar tidak boleh kosong!");
-								}
-							}
-						}
-					}
-				}
-			}
+		verifyNullAndEmptyString(learningMaterialTypes.getId(), "Id tipe bahan ajar tidak boleh kosong!");
+
+		LearningMaterialTypes learningType = getById(learningMaterialTypes.getId());
+		verifyNull(learningType, "Id tipe bahan ajar tidak ada!");
+
+		verifyNull(learningType.getVersion(), "Version tidak boleh kosong!");
+		if (learningMaterialTypes.getVersion() != learningType.getVersion()) {
+			throw new Exception("Tipe bahan ajar version tidak sama!");
 		}
+
+		verifyNullAndEmptyString(learningMaterialTypes.getCode(), "Kode tipe bahan ajar tidak boleh kosong!");
+		if (learningMaterialTypes.getCode() == null || learningMaterialTypes.getCode().trim().equals("")) {
+			throw new Exception("Kode tipe bahan ajar tidak boleh kosong!");
+		}
+		if (!learningMaterialTypes.getCode().equalsIgnoreCase(learningType.getCode())) {
+			LearningMaterialTypes lmType = getByCode(learningMaterialTypes.getCode());
+			verifyNull(!verifyNull(lmType), "Kode tipe bahan ajar tidak boleh sama!");
+		}
+		verifyNullAndEmptyString(learningMaterialTypes.getLearningMaterialTypeName(),
+				"Name tipe bahan ajar tidak boleh kosong!");
 	}
 
 	private boolean validateDelete(String id) throws Exception {

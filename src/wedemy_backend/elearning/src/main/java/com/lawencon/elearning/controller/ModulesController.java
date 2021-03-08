@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.Modules;
 import com.lawencon.elearning.service.ModulesService;
@@ -27,9 +26,8 @@ public class ModulesController extends ElearningBaseController {
 	private ModulesService modulesService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody Modules module) {
 		try {
-			Modules module = new ObjectMapper().readValue(body, Modules.class);
 			modulesService.insert(module);
 			return responseSuccess(module, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {
@@ -50,9 +48,8 @@ public class ModulesController extends ElearningBaseController {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestBody String body) {
+	public ResponseEntity<?> update(@RequestBody Modules module) {
 		try {
-			Modules module = new ObjectMapper().readValue(body, Modules.class);
 			modulesService.update(module);
 			Modules response = modulesService.getById(module.getId());
 			return responseSuccess(response, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);

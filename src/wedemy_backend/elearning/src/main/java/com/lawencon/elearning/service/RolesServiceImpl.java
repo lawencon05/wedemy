@@ -5,12 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lawencon.base.BaseServiceImpl;
 import com.lawencon.elearning.dao.RolesDao;
 import com.lawencon.elearning.model.Roles;
 
 @Service
-public class RolesServiceImpl extends BaseServiceImpl implements RolesService {
+public class RolesServiceImpl extends ElearningBaseServiceImpl implements RolesService {
 
 	@Autowired
 	private RolesDao rolesDao;
@@ -22,7 +21,9 @@ public class RolesServiceImpl extends BaseServiceImpl implements RolesService {
 
 	@Override
 	public Roles getById(String id) throws Exception {
-		return rolesDao.getRoleById(id);
+		Roles r =  rolesDao.getRoleById(id);
+		verifyNull(r, "Id role tidak ditemukan");
+		return r;
 	}
 
 	@Override

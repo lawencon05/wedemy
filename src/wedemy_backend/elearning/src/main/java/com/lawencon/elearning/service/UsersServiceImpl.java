@@ -78,7 +78,12 @@ public class UsersServiceImpl extends ElearningBaseServiceImpl implements UsersS
 	public void deleteById(String id, String idUser) throws Exception {
 		try {
 			begin();
-			Users user = getById(id);
+			verifyNullAndEmptyString(id, "Id User tidak boleh kosong");
+			verifyNullAndEmptyString(idUser, "Updated By tidak boleh kosong");
+			Users user = usersDao.getUserById(id);
+			verifyNull(user, "Id User tidak ada");
+			Users updatedByUser = usersDao.getUserById(idUser);
+			verifyNull(updatedByUser, "Updated By tidak ada");
 			if (validateDelete(id)) {
 				usersDao.softDeleteUserById(id, idUser);
 				profilesService.softDeleteById(user.getIdProfile().getId(), idUser);
@@ -113,7 +118,9 @@ public class UsersServiceImpl extends ElearningBaseServiceImpl implements UsersS
 
 	@Override
 	public Users getById(String id) throws Exception {
-		return usersDao.getUserById(id);
+		Users u = usersDao.getUserById(id);
+		verifyNull(u, "Id tidak ditemukan");
+		return u;
 	}
 
 	@Override
@@ -138,6 +145,9 @@ public class UsersServiceImpl extends ElearningBaseServiceImpl implements UsersS
 
 	@Override
 	public List<Users> getByRoleCode(String code) throws Exception {
+		verifyNullAndEmptyString(code, "Kode role tidak boleh kosong");
+		Roles role = rolesService.getByCode(code);
+		verifyNull(role, "Id role tidak ada");
 		return usersDao.getUsersByRoleCode(code);
 	}
 
@@ -163,90 +173,59 @@ public class UsersServiceImpl extends ElearningBaseServiceImpl implements UsersS
 	}
 
 	private void validateInsert(Users user) throws Exception {
-		if (user.getUsername() == null || user.getUsername().trim().equals("")) {
-			throw new Exception("Username tidak boleh kosong");
-		} else if (user.getUsername() != null) {
-			Users usr = getByUsername(user.getUsername());
-			if (usr != null) {
-				throw new Exception("Username sudah ada");
-			} else {
-				if (user.getUserPassword() == null || user.getUserPassword().trim().equals("")) {
-					throw new Exception("Password tidak boleh kosong");
-				} else if (user.getIdProfile().getFullName() == null
-						|| user.getIdProfile().getFullName().trim().equals("")) {
-					throw new Exception("Nama Lengkap tidak boleh kosong");
-				} else if (user.getIdProfile().getEmail() == null || user.getIdProfile().getEmail().trim().equals("")) {
-					throw new Exception("Email tidak boleh kosong");
-				} else if (user.getIdProfile().getEmail() != null) {
-					Profiles profile = profilesService.getByEmail(user.getIdProfile().getEmail());
-					if (profile != null) {
-						throw new Exception("Email sudah ada");
-					}
-					if (user.getIdRole().getCode() != null) {
-						Roles role = rolesService.getByCode(user.getIdRole().getCode());
-						if (role.getCode().equals("TTR") || role.getCode().equals("ADM")
-								|| role.getCode().equals("SADM")) {
-							validateInsertExceptParticipant(user);
-						} else {
-							System.out.println("Sending Email......");
-							sendEmailRegister(user.getIdProfile());
-							System.out.println("Done");
-						}
-					}
-				}
-			}
+		verifyNullAndEmptyString(user.getUsername(), "Username tidak boleh kosong");
+		Users usr = getByUsername(user.getUsername());
+		verifyNull(!verifyNull(usr), "Username sudah ada");
+
+		verifyNullAndEmptyString(user.getUserPassword(), "Password tidak boleh kosong");
+
+		verifyNullAndEmptyString(user.getIdProfile().getFullName(), "Nama Lengkap tidak boleh kosong");
+
+		verifyNullAndEmptyString(user.getIdProfile().getEmail(), "Email tidak boleh kosong");
+		Profiles profile = profilesService.getByEmail(user.getIdProfile().getEmail());
+		verifyNull(!verifyNull(profile) ? null : false, "Email sudah ada");
+
+		verifyNull(user.getIdRole().getCode(), "Role tidak ada!");
+		Roles role = rolesService.getByCode(user.getIdRole().getCode());
+		if (role.getCode().equals("TTR") || role.getCode().equals("ADM") || role.getCode().equals("SADM")) {
+			validateInsertExceptParticipant(user);
+		} else {
+			System.out.println("Sending Email......");
+			sendEmailRegister(user.getIdProfile());
+			System.out.println("Done");
 		}
 
 	}
 
 	private void validateInsertExceptParticipant(Users user) throws Exception {
-		if (user.getIdProfile().getIdNumber() == null || user.getIdProfile().getIdNumber().trim().equals("")) {
-			throw new Exception("Nomor Kartu Penduduk tidak boleh kosong");
-		} else {
-			String regex = "\\d+";
-			if(!user.getIdProfile().getIdNumber().matches(regex)) {
-				throw new Exception("Nomor Kartu Penduduk tidak sesuai");
-			}
+		verifyNullAndEmptyString(user.getIdProfile().getIdNumber(), "Nomor Kartu Penduduk tidak boleh kosong");
+		String regex = "\\d+";
+		if (!user.getIdProfile().getIdNumber().matches(regex)) {
+			throw new Exception("Nomor Kartu Penduduk tidak sesuai");
 		}
-		if (user.getIdProfile().getBirthPlace() == null
-				|| user.getIdProfile().getBirthPlace().trim().equals("")) {
-			throw new Exception("Tempat Lahir tidak boleh kosong");
+		verifyNullAndEmptyString(user.getIdProfile().getBirthPlace(), "Tempat Lahir tidak boleh kosong");
+
+		verifyNull(user.getIdProfile().getBirthDate(), "Tanggal Lahir tidak boleh kosong");
+
+		verifyNullAndEmptyString(user.getIdProfile().getPhone(), "Nomor Handphone tidak boleh kosong");
+		if (!user.getIdProfile().getPhone().matches(regex)) {
+			throw new Exception("Nomor Handphone tidak sesuai");
 		}
-		if (user.getIdProfile().getBirthDate() == null
-				|| user.getIdProfile().getBirthDate().toString().trim().equals("")) {
-			throw new Exception("Tanggal Lahir tidak boleh kosong");
-		}
-		if (user.getIdProfile().getPhone() == null) {
-			throw new Exception("Nomor Handphone tidak boleh kosong");
-		} else {
-			String regex = "\\d+";
-			if(!user.getIdProfile().getPhone().matches(regex)) {
-				throw new Exception("Nomor Handphone tidak sesuai");
-			}
-		}
-		if (user.getIdProfile().getEmail() == null) {
-			throw new Exception("Email tidak boleh kosong");
-		}
+
+		verifyNull(user.getIdProfile().getEmail(), "Email tidak boleh kosong");
 	}
 
 	private void validateUpdate(Users user) throws Exception {
-		if (user.getId() == null || user.getId().trim().equals("")) {
-			throw new Exception("Id user tidak boleh kosong");
-		} else {
-			Users usr = getById(user.getId());
-			if (user.getUsername() == null || user.getUsername().trim().equals("")) {
-				throw new Exception("Username tidak boleh kosong");
-			}
-			if (usr.getVersion() != user.getVersion()) {
-				throw new Exception("User yang diedit telah diperbarui, silahkan coba lagi");
-			}
-			if (user.getUserPassword() == null || user.getUserPassword().trim().equals("")) {
-				throw new Exception("Password tidak boleh kosong");
-			} else {
-				if (passwordEncoder.matches(user.getUserPassword(), usr.getUserPassword())) {
-					throw new Exception("Password tidak boleh sama dengan sebelumnya");
-				}
-			}
+		verifyNullAndEmptyString(user.getId(), "Id user tidak boleh kosong");
+		Users usr = getById(user.getId());
+		verifyNullAndEmptyString(user.getUsername(), "Username tidak boleh kosong");
+
+		if (usr.getVersion() != user.getVersion()) {
+			throw new Exception("User yang diedit telah diperbarui, silahkan coba lagi");
+		}
+		verifyNullAndEmptyString(user.getUserPassword(), "Password tidak boleh kosong");
+		if (passwordEncoder.matches(user.getUserPassword(), usr.getUserPassword())) {
+			throw new Exception("Password tidak boleh sama dengan sebelumnya");
 		}
 	}
 

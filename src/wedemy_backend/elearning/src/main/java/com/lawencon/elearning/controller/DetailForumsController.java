@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.DetailForums;
 import com.lawencon.elearning.service.DetailForumsService;
@@ -26,11 +24,8 @@ public class DetailForumsController extends ElearningBaseController {
 	private DetailForumsService detailForumService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody DetailForums detailForum) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			DetailForums detailForum = obj.readValue(body, DetailForums.class);
 			detailForumService.insertDetailForum(detailForum);
 			return responseSuccess(detailForum, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {

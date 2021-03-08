@@ -65,6 +65,9 @@ public class ForumsServiceImpl extends ElearningBaseServiceImpl implements Forum
 
 	@Override
 	public List<ForumAndDetailForums> getForumByIdDetailModuleRegistration(String id) throws Exception {
+		verifyNullAndEmptyString(id, "Id Detail Module Registration tidak boleh kosong");
+		DetailModuleRegistrations detailModuleRgs = dtlModuleRgsService.getDtlModuleRgsById(id);
+		verifyNull(detailModuleRgs, "Id Detail Module Registration tidak ada");
 		List<ForumAndDetailForums> listResult = new ArrayList<>();
 		List<Forums> forums = forumsDao.getForumByIdDetailModuleRegistration(id);
 		for (Forums forum : forums) {
@@ -78,26 +81,18 @@ public class ForumsServiceImpl extends ElearningBaseServiceImpl implements Forum
 	}
 
 	private void validateInsert(Forums forum) throws Exception {
-		if (forum.getContentText() == null) {
-			throw new Exception("Konten forum tidak boleh kosong");
-		}
-		if (forum.getIdDetailModuleRegistration() != null) {
-			DetailModuleRegistrations dtlModuleRgs = dtlModuleRgsService
-					.getDtlModuleRgsById(forum.getIdDetailModuleRegistration().getId());
-			if (dtlModuleRgs == null) {
-				throw new Exception("Id Detail Module Registration salah");
-			}
-		} else {
-			throw new Exception("Id Detail Module Registration tidak boleh kosong");
-		}
-		if (forum.getIdUser() != null) {
-			Users user = usersService.getById(forum.getIdUser().getId());
-			if (user == null) {
-				throw new Exception("Id User salah");
-			}
-		} else {
-			throw new Exception("Id User tidak boleh kosong");
-		}
+		verifyNull(forum.getContentText(), "Konten forum tidak boleh kosong");
+
+		verifyNull(forum.getIdDetailModuleRegistration(), "Id Detail Module Registration tidak boleh kosong");
+
+		DetailModuleRegistrations dtlModuleRgs = dtlModuleRgsService
+				.getDtlModuleRgsById(forum.getIdDetailModuleRegistration().getId());
+		verifyNull(dtlModuleRgs, "Id Detail Module Registration salah");
+
+		verifyNull(forum.getIdUser(), "Id User tidak boleh kosong");
+		
+		Users user = usersService.getById(forum.getIdUser().getId());
+		verifyNull(user, "Id User salah");
 	}
 
 }

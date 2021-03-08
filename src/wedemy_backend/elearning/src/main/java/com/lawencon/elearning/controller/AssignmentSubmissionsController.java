@@ -26,7 +26,7 @@ public class AssignmentSubmissionsController extends ElearningBaseController {
 	private AssignmentSubmissionsService assignmentSubmissionsService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestPart String body, @RequestPart("file") MultipartFile file) {
+	public ResponseEntity<?> insert(@RequestPart("body") String body, @RequestPart("file") MultipartFile file) {
 		try {
 			ObjectMapper obj = new ObjectMapper();
 			obj.registerModule(new JavaTimeModule());
@@ -53,7 +53,7 @@ public class AssignmentSubmissionsController extends ElearningBaseController {
 	}
 
 	@PatchMapping
-	public ResponseEntity<?> update(@RequestPart String body, @RequestPart("file") MultipartFile file) {
+	public ResponseEntity<?> update(@RequestPart("body") String body, @RequestPart("file") MultipartFile file) {
 		try {
 			ObjectMapper obj = new ObjectMapper();
 			obj.registerModule(new JavaTimeModule());

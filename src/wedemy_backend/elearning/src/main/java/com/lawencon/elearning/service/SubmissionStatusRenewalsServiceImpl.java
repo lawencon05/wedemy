@@ -46,26 +46,15 @@ public class SubmissionStatusRenewalsServiceImpl extends ElearningBaseServiceImp
 
 	private void validateInsert(SubmissionStatusRenewal statusRenewal) throws Exception {
 		Users user = usersService.getById(statusRenewal.getCreatedBy());
-		if (user == null) {
-			throw new Exception("CreatedBy bukan merupakan Id User yang valid");
-		}
-		if (statusRenewal.getIdAssignmentSubmission() != null) {
-			AssignmentSubmissions submission = submissionService
-					.getById(statusRenewal.getIdAssignmentSubmission().getId());
-			if (submission == null) {
-				throw new Exception("Id Assignment Submission salah");
-			}
-		} else {
-			throw new Exception("Id Assignment Submission tidak boleh kosong");
-		}
-		if (statusRenewal.getIdSubmissionStatus() != null) {
-			SubmissionStatus status = statusService.getByCode(statusRenewal.getIdSubmissionStatus().getCode());
-			if (status == null) {
-				throw new Exception("Kode Submission Status salah");
-			}
-		} else {
-			throw new Exception("Id Submission Status tidak boleh kosong");
-		}
+		verifyNull(user, "CreatedBy bukan merupakan Id User yang valid");
+
+		verifyNull(statusRenewal.getIdAssignmentSubmission(), "Id Assignment Submission tidak boleh kosong");
+		AssignmentSubmissions submission = submissionService.getById(statusRenewal.getIdAssignmentSubmission().getId());
+		verifyNull(submission, "Id Assignment Submission salah");
+		
+		verifyNull(statusRenewal.getIdSubmissionStatus(), "Id Submission Status tidak boleh kosong");
+		SubmissionStatus status = statusService.getByCode(statusRenewal.getIdSubmissionStatus().getCode());
+		verifyNull(status,"Kode Submission Status salah");
 	}
 
 }

@@ -40,7 +40,7 @@ public class LearningMaterialsController extends ElearningBaseController {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestPart String body,
+	public ResponseEntity<?> update(@RequestPart String body ,
 			@RequestPart(value = "file", required = false) MultipartFile file) {
 		try {
 			ObjectMapper obj = new ObjectMapper();

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.Profiles;
 import com.lawencon.elearning.model.Users;
@@ -30,11 +28,8 @@ public class UsersController extends ElearningBaseController {
 	private UsersService usersService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody Users user) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			Users user = obj.readValue(body, Users.class);
 			usersService.insert(user);
 			return responseSuccess(user, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {
@@ -66,11 +61,8 @@ public class UsersController extends ElearningBaseController {
 	}
 
 	@PatchMapping
-	public ResponseEntity<?> update(@RequestBody String body) {
+	public ResponseEntity<?> update(@RequestBody Users user) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			Users user = obj.readValue(body, Users.class);
 			usersService.update(user);
 			return responseSuccess(user, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);
 		} catch (Exception e) {
@@ -80,9 +72,8 @@ public class UsersController extends ElearningBaseController {
 	}
 
 	@PatchMapping("/forget-password")
-	public ResponseEntity<?> forgetPassword(@RequestBody String body) {
+	public ResponseEntity<?> forgetPassword(@RequestBody Profiles profile) {
 		try {
-			Profiles profile = new ObjectMapper().readValue(body, Profiles.class);
 			Users user = usersService.updateUserPassword(profile);
 			return responseSuccess(user, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);
 		} catch (Exception e) {

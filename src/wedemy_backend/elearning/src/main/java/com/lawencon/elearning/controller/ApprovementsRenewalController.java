@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.helper.Jasper;
 import com.lawencon.elearning.helper.TutorApprovementInputs;
@@ -41,10 +40,8 @@ public class ApprovementsRenewalController extends ElearningBaseController {
 	private LearningMaterialsService learningMaterialService;
 
 	@PostMapping("tutor-approvement")
-	public ResponseEntity<?> insertTutorApprovement(@RequestBody String body) {
+	public ResponseEntity<?> insertTutorApprovement(@RequestBody TutorApprovementInputs approvementsRenewal) {
 		try {
-			TutorApprovementInputs approvementsRenewal = new ObjectMapper().readValue(body,
-					TutorApprovementInputs.class);
 			approvementsRenewalService.insertByTutor(approvementsRenewal);
 			return responseSuccess(approvementsRenewal, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {

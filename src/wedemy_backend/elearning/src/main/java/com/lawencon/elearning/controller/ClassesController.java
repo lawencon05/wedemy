@@ -90,12 +90,9 @@ public class ClassesController extends ElearningBaseController {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestPart String body,
+	public ResponseEntity<?> update(@RequestPart Classes clazz,
 			@RequestPart(value = "file", required = false) MultipartFile file) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			Classes clazz = obj.readValue(body, Classes.class);
 			classesService.update(clazz, file);
 			Classes response = classesService.getById(clazz.getId());
 			return responseSuccess(response, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);

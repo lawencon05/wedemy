@@ -15,6 +15,7 @@ import com.lawencon.elearning.model.DetailClasses;
 import com.lawencon.elearning.model.DetailModuleRegistrations;
 import com.lawencon.elearning.model.ModuleRegistrations;
 import com.lawencon.elearning.model.Modules;
+import com.lawencon.elearning.model.Users;
 
 @Service
 public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implements DetailClassesService {
@@ -36,6 +37,9 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 
 	@Autowired
 	private DetailModuleRegistrationsService detailModuleRegistrationsService;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insert(DetailClasses detailClass) throws Exception {
@@ -62,18 +66,18 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 		try {
 			begin();
 			Classes clazz = classService.getInActiveById(detailClass.getIdClass().getId());
-			
+
 			classService.reactivate(detailClass.getIdClass().getId(), detailClass.getCreatedBy());
-			
+
 			detailClass.setCode(generateCodeDetailClass(clazz.getCode(), detailClass.getStartDate()));
 			detailClass.setViews(0);
 			detailClass.setIdClass(clazz);
 
 			DetailClasses detailClassOld = detailClassesDao.getDtlClassByIdClass(detailClass.getIdClass().getId());
-			
+
 			List<ModuleRegistrations> modulesRegistrationListOld = moduleRegistrationsService
 					.getAllByIdDtlClass(detailClassOld.getId());
-			
+
 			List<Modules> modulesList = new ArrayList<Modules>();
 
 			List<DetailModuleRegistrations> detailModuleList = new ArrayList<DetailModuleRegistrations>();
@@ -81,10 +85,10 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 			for (ModuleRegistrations moduleRegistration : modulesRegistrationListOld) {
 				Modules module = modulesService.getById(moduleRegistration.getIdModule().getId());
 				modulesList.add(module);
-				
+
 				List<DetailModuleRegistrations> detailModuleRegis = detailModuleRegistrationsService
 						.getAllByIdModuleRgs(moduleRegistration.getId());
-				
+
 				for (DetailModuleRegistrations detailModule : detailModuleRegis) {
 					DetailModuleRegistrations detail = new DetailModuleRegistrations();
 					detail.setIdLearningMaterial(detailModule.getIdLearningMaterial());
@@ -96,7 +100,7 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 			detailClassesDao.insert(detailClass, () -> validateReactive(detailClass));
 
 			List<ModuleRegistrations> modulesRegistrationNew = new ArrayList<ModuleRegistrations>();
-			for(Modules module : modulesList) {
+			for (Modules module : modulesList) {
 				ModuleRegistrations moduleRgs = new ModuleRegistrations();
 				moduleRgs.setIdDetailClass(detailClass);
 				moduleRgs.setIdModule(module);
@@ -104,10 +108,10 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 				moduleRegistrationsService.reactive(moduleRgs);
 				modulesRegistrationNew.add(moduleRgs);
 			}
-			
-			for(DetailModuleRegistrations detailModuleRgs : detailModuleList) {
-				for(ModuleRegistrations md : modulesRegistrationNew) {
-					if(detailModuleRgs.getIdModuleRegistration().getIdModule().getId()
+
+			for (DetailModuleRegistrations detailModuleRgs : detailModuleList) {
+				for (ModuleRegistrations md : modulesRegistrationNew) {
+					if (detailModuleRgs.getIdModuleRegistration().getIdModule().getId()
 							.equalsIgnoreCase(md.getIdModule().getId())) {
 						detailModuleRgs.setCreatedBy(detailClass.getCreatedBy());
 						detailModuleRgs.setScheduleDate(detailClass.getStartDate());
@@ -125,11 +129,16 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 
 	@Override
 	public DetailClasses getById(String id) throws Exception {
-		return detailClassesDao.getDtlClassById(id);
+		DetailClasses dtlClass = detailClassesDao.getDtlClassById(id);
+		verifyNull(dtlClass, "Id detail class tidak ditemukan");
+		return dtlClass;
 	}
 
 	@Override
 	public DetailClassInformation getInformationByIdDetailClass(String idDtlClass) throws Exception {
+		verifyNull(idDtlClass, "Id Detail Class tidak boleh kosong");
+		DetailClasses dtlClass = detailClassesDao.getDtlClassById(idDtlClass);
+		verifyNull(dtlClass, "Id Detail Class tidak ada");
 		DetailClassInformation dtlClassInfo = new DetailClassInformation();
 		try {
 			begin();
@@ -168,6 +177,9 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 
 	@Override
 	public List<DetailClasses> getTutorClasses(String idTutor) throws Exception {
+		verifyNull(idTutor, "Id Tutor tidak boleh kosong");
+		Users user = userService.getById(idTutor);
+		verifyNull(user, "Id Detail Class tidak ada");
 		return detailClassesDao.getAllByIdTutor(idTutor);
 	}
 
@@ -177,26 +189,18 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 	}
 
 	private void validate(DetailClasses detailClass) throws Exception {
-		if (detailClass.getStartDate() == null) {
-			throw new Exception("Tanggal mulai detail kelas tidak boleh kosong!");
-		} else {
-			if(detailClass.getStartDate().isBefore(LocalDate.now())) {
-				throw new Exception("Tanggal mulai tidak boleh sebelum hari ini");
-			}
+		verifyNull(detailClass.getStartDate(), "Tanggal mulai detail kelas tidak boleh kosong!");
+		if (detailClass.getStartDate().isBefore(LocalDate.now())) {
+			throw new Exception("Tanggal mulai tidak boleh sebelum hari ini");
 		}
-		if (detailClass.getEndDate() == null) {
-			throw new Exception("Tanggal akhir detail kelas tidak boleh kosong!");
-		} else {
-			if(detailClass.getEndDate().isBefore(detailClass.getStartDate())) {
-				throw new Exception("Tanggal akhir tidak boleh sebelum tanggal mulai");
-			}
+
+		verifyNull(detailClass.getEndDate(), "Tanggal akhir detail kelas tidak boleh kosong!");
+		if (detailClass.getEndDate().isBefore(detailClass.getStartDate())) {
+			throw new Exception("Tanggal akhir tidak boleh sebelum tanggal mulai");
 		}
-		if (detailClass.getStartTime() == null) {
-			throw new Exception("Waktu mulai detail kelas tidak boleh kosong!");
-		}
-		if (detailClass.getEndTime() == null) {
-			throw new Exception("Waktu akhir detail kelas tidak boleh kosong!");
-		}
+
+		verifyNull(detailClass.getStartTime(), "Waktu mulai detail kelas tidak boleh kosong!");
+		verifyNull(detailClass.getEndTime(), "Waktu akhir detail kelas tidak boleh kosong!");
 	}
 
 	private void validateReactive(DetailClasses detailClass) throws Exception {
@@ -223,20 +227,14 @@ public class DetailClassesServiceImpl extends ElearningBaseServiceImpl implement
 	}
 
 	private void validateUpdate(DetailClasses dtlClass) throws Exception {
-		if (dtlClass.getEndDate() == null) {
-			throw new Exception("Tanggal akhir detail kelas tidak boleh kosong!");
-		} else {
-			if (dtlClass.getEndDate().compareTo(dtlClass.getStartDate()) < 0) {
-				throw new Exception("Tanggal akhir detail kelas tidak boleh kurang dari tanggal mulai");
-			}
+		verifyNull(dtlClass.getEndDate(), "Tanggal akhir detail kelas tidak boleh kosong!");
+		if (dtlClass.getEndDate().compareTo(dtlClass.getStartDate()) < 0) {
+			throw new Exception("Tanggal akhir detail kelas tidak boleh kurang dari tanggal mulai");
 		}
-		if (dtlClass.getEndTime() == null) {
-			throw new Exception("Waktu akhir detail kelas tidak boleh kosong!");
-		} else {
-			if (dtlClass.getEndTime().compareTo(dtlClass.getStartTime()) < 0) {
-				throw new Exception("Waktu akhir detail kelas tidak boleh kurang dari waktu akhir");
-			}
+
+		verifyNull(dtlClass.getEndTime(), "Waktu akhir detail kelas tidak boleh kosong!");
+		if (dtlClass.getEndTime().compareTo(dtlClass.getStartTime()) < 0) {
+			throw new Exception("Waktu akhir detail kelas tidak boleh kurang dari waktu akhir");
 		}
 	}
-
 }

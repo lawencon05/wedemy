@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +29,8 @@ public class ProfilesController extends ElearningBaseController {
 	private ProfilesService profilesService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody Profiles profile) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			Profiles profile = obj.readValue(body, Profiles.class);
 			profilesService.insert(profile);
 			return responseSuccess(profile, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {
@@ -66,7 +62,7 @@ public class ProfilesController extends ElearningBaseController {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestPart String body,
+	public ResponseEntity<?> update(@RequestPart("body") String body,
 			@RequestPart(value = "file", required = false) MultipartFile file) {
 		try {
 			ObjectMapper obj = new ObjectMapper();
@@ -75,17 +71,6 @@ public class ProfilesController extends ElearningBaseController {
 			profilesService.update(profile, file);
 			Profiles data = profilesService.getById(profile.getId());
 			return responseSuccess(data, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return responseError(e);
-		}
-	}
-
-	@DeleteMapping("{id}")
-	public ResponseEntity<?> deleteById(@PathVariable("id") String id) {
-		try {
-			profilesService.deleteById(id);
-			return responseSuccess(null, HttpStatus.OK, MessageStat.SUCCESS_DELETE);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return responseError(e);

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.ClassEnrollments;
 import com.lawencon.elearning.model.DetailClasses;
@@ -27,9 +26,8 @@ public class ClassEnrollmentController extends ElearningBaseController {
 	private ClassEnrollmentService classEnrollmentService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody ClassEnrollments classEnrollment ) {
 		try {
-			ClassEnrollments classEnrollment = new ObjectMapper().readValue(body, ClassEnrollments.class);
 			classEnrollmentService.insert(classEnrollment);
 			return responseSuccess(classEnrollment, HttpStatus.CREATED, MessageStat.SUCCESS_CREATE_ENROLL);
 		} catch (Exception e) {

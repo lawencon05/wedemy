@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.Approvements;
 import com.lawencon.elearning.service.ApprovementsService;
@@ -27,9 +26,8 @@ public class ApprovementsController extends ElearningBaseController {
 	private ApprovementsService approvementsService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody Approvements approvement) {
 		try {
-			Approvements approvement = new ObjectMapper().readValue(body, Approvements.class);
 			approvementsService.insert(approvement);
 			return responseSuccess(approvement, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {
@@ -50,9 +48,8 @@ public class ApprovementsController extends ElearningBaseController {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestBody String body) {
+	public ResponseEntity<?> update(@RequestBody Approvements approvement) {
 		try {
-			Approvements approvement = new ObjectMapper().readValue(body, Approvements.class);
 			approvementsService.update(approvement);
 			Approvements response = approvementsService.getById(approvement.getId());
 			return responseSuccess(response, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);

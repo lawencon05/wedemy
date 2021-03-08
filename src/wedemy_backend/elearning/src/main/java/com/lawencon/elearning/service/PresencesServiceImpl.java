@@ -88,24 +88,18 @@ public class PresencesServiceImpl extends ElearningBaseServiceImpl implements Pr
 	}
 
 	private void validateInsert(Presences presence) throws Exception {
-		if (presence.getIdDetailModuleRegistration() != null
-				&& presence.getIdDetailModuleRegistration().getId() != null) {
-			DetailModuleRegistrations dtlModuleRgs = dtlModuleRgsService
-					.getDtlModuleRgsById(presence.getIdDetailModuleRegistration().getId());
-			if (dtlModuleRgs == null) {
-				throw new Exception("Id Detail Module Registration salah");
-			}
-		} else {
-			throw new Exception("Id Detail Module Registration tidak boleh kosong");
-		}
-		if (presence.getIdUser() != null && presence.getIdUser().getId() != null) {
-			Users user = usersService.getById(presence.getIdUser().getId());
-			if (user == null) {
-				throw new Exception("Id User salah");
-			}
-		} else {
-			throw new Exception("Id User tidak boleh kosong");
-		}
+		verifyNull(presence.getIdDetailModuleRegistration(), "Detail Module Registration tidak boleh kosong");
+		verifyNull(presence.getIdDetailModuleRegistration().getId(),
+				"Id Detail Module Registration tidak boleh kosong");
+		DetailModuleRegistrations dtlModuleRgs = dtlModuleRgsService
+				.getDtlModuleRgsById(presence.getIdDetailModuleRegistration().getId());
+		verifyNull(dtlModuleRgs, "Id Detail Module Registration salah");
+		
+		verifyNull(presence.getIdUser(), "User tidak boleh kosong");
+		verifyNull(presence.getIdUser().getId(),
+				"Id User tidak boleh kosong");
+		Users user = usersService.getById(presence.getIdUser().getId());
+		verifyNull(user, "Id User salah");
 	}
 
 }

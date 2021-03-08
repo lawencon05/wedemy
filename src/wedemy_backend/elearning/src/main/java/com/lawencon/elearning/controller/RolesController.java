@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.Roles;
 import com.lawencon.elearning.service.RolesService;
@@ -26,9 +25,8 @@ public class RolesController extends ElearningBaseController {
 	private RolesService rolesService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody Roles role) {
 		try {
-			Roles role = new ObjectMapper().readValue(body, Roles.class);
 			rolesService.insert(role);
 			return responseSuccess(role, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {

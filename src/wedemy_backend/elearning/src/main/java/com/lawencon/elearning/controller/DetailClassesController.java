@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.helper.DetailClassInformation;
 import com.lawencon.elearning.model.DetailClasses;
@@ -27,11 +25,8 @@ public class DetailClassesController extends ElearningBaseController {
 	private DetailClassesService dtlClassesService;
 
 	@PostMapping
-	public ResponseEntity<?> reactivateClass(@RequestBody String body) {
+	public ResponseEntity<?> reactivateClass(@RequestBody DetailClasses detailClass) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			obj.registerModule(new JavaTimeModule());
-			DetailClasses detailClass = obj.readValue(body, DetailClasses.class);
 			dtlClassesService.reactiveOldClass(detailClass);
 			return responseSuccess(detailClass, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {

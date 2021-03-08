@@ -9,6 +9,7 @@ import com.lawencon.elearning.constant.TransactionNumberCode;
 import com.lawencon.elearning.dao.ClassEnrollmentsDao;
 import com.lawencon.elearning.model.ClassEnrollments;
 import com.lawencon.elearning.model.DetailClasses;
+import com.lawencon.elearning.model.Users;
 
 @Service
 public class ClassEnrollmentServiceImpl extends ElearningBaseServiceImpl implements ClassEnrollmentService {
@@ -18,6 +19,9 @@ public class ClassEnrollmentServiceImpl extends ElearningBaseServiceImpl impleme
 
 	@Autowired
 	private DetailClassesService detailClassService;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insert(ClassEnrollments classEnrollment) throws Exception {
@@ -45,6 +49,12 @@ public class ClassEnrollmentServiceImpl extends ElearningBaseServiceImpl impleme
 
 	@Override
 	public ClassEnrollments getByIdDtlClassAndIdParticipant(String idDtlClass, String idUser) throws Exception {
+		verifyNullAndEmptyString(idDtlClass, "Id Detail Class tidak boleh kosong");
+		DetailClasses detailClass = detailClassService.getById(idDtlClass);
+		verifyNull(detailClass, "Id Detail Class tidak ada");
+		verifyNullAndEmptyString(idUser, "Id User tidak boleh kosong");
+		Users user = userService.getById(idUser);
+		verifyNull(user, "Id Participant tidak ada");
 		return classEnrollmentDao.getClassEnrollmentByIdDtlClassAndIdUser(idDtlClass, idUser);
 	}
 
@@ -60,6 +70,9 @@ public class ClassEnrollmentServiceImpl extends ElearningBaseServiceImpl impleme
 
 	@Override
 	public List<DetailClasses> getAllByIdUser(String id) throws Exception {
+		verifyNullAndEmptyString(id, "Id User tidak boleh kosong");
+		Users user = userService.getById(id);
+		verifyNull(user, "Id participant tidak ada");
 		return classEnrollmentDao.getAllClassEnrollmentsByIdUser(id);
 	}
 

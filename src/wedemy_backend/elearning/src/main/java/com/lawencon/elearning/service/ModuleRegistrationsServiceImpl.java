@@ -17,6 +17,7 @@ import com.lawencon.elearning.helper.EnrolledClass;
 import com.lawencon.elearning.helper.LearningMaterialsAndPermissions;
 import com.lawencon.elearning.helper.ModuleAndLearningMaterials;
 import com.lawencon.elearning.model.ApprovementsRenewal;
+import com.lawencon.elearning.model.Classes;
 import com.lawencon.elearning.model.DetailClasses;
 import com.lawencon.elearning.model.DetailModuleRegistrations;
 import com.lawencon.elearning.model.ModuleRegistrations;
@@ -47,6 +48,9 @@ public class ModuleRegistrationsServiceImpl extends ElearningBaseServiceImpl imp
 
 	@Autowired
 	private UsersService usersService;
+	
+	@Autowired
+	private ClassesService classService;
 
 	@Override
 	public void insert(ClassInput classInput) throws Exception {
@@ -60,7 +64,7 @@ public class ModuleRegistrationsServiceImpl extends ElearningBaseServiceImpl imp
 			moduleRgsDao.insert(moduleRgs, () -> validateInsert(moduleRgs));
 		}
 	}
-	
+
 	@Override
 	public void reactive(ModuleRegistrations moduleRgs) throws Exception {
 		moduleRgs.setTrxNumber(generateTrxNumber(TransactionNumberCode.MODULE_REGISTRATION.code));
@@ -79,13 +83,19 @@ public class ModuleRegistrationsServiceImpl extends ElearningBaseServiceImpl imp
 
 	@Override
 	public EnrolledClass getEnrolledClassByIdDtlClass(String idUser, String idDtlClass) throws Exception {
+		verifyNull(idDtlClass, "Id Detail Class tidak boleh kosong");
+		DetailClasses detailClass = dtlClassesService.getById(idDtlClass);
+		verifyNull(detailClass, "Id Detail Class tidak ada");
+		verifyNull(idUser, "Id User tidak boleh kosong");
+		Users user = usersService.getById(idUser);
+		verifyNull(user, "Id User tidak ada");
 		EnrolledClass enrolledClass = new EnrolledClass();
 		enrolledClass.setDetailClass(dtlClassesService.getById(idDtlClass));
 		LocalTime startTime = enrolledClass.getDetailClass().getStartTime();
 		LocalTime endTime = enrolledClass.getDetailClass().getEndTime();
 		List<ModuleAndLearningMaterials> listResult = new ArrayList<>();
 		List<ModuleRegistrations> moduleRgsList = moduleRgsDao.getAllModifiedByIdDtlClass(idDtlClass);
-		Users user = usersService.getById(idUser);
+//		Users user = usersService.getById(idUser);
 		for (ModuleRegistrations moduleRgs : moduleRgsList) {
 			ModuleAndLearningMaterials result = new ModuleAndLearningMaterials();
 			List<LearningMaterialsAndPermissions> learningMaterials = new ArrayList<>();
@@ -146,6 +156,9 @@ public class ModuleRegistrationsServiceImpl extends ElearningBaseServiceImpl imp
 
 	@Override
 	public List<ModuleRegistrations> getAllModifiedByIdDtlClass(String idClass) throws Exception {
+		verifyNull(idClass, "Id Class tidak boleh kosong");
+		Classes cls = classService.getById(idClass);
+		verifyNull(cls, "Id Class tidak ada");
 		return moduleRgsDao.getAllModifiedByIdDtlClass(idClass);
 	}
 
@@ -155,33 +168,19 @@ public class ModuleRegistrationsServiceImpl extends ElearningBaseServiceImpl imp
 	}
 
 	private void validateInsert(ModuleRegistrations moduleRegistration) throws Exception {
-		if (moduleRegistration.getIdModule() == null) {
-			throw new Exception("Module tidak boleh kosong!");
-		} else {
-			if (moduleRegistration.getIdModule().getId() == null
-					|| moduleRegistration.getIdModule().getId().equals("")) {
-				throw new Exception("Id Module tidak boleh kosong!");
-			} else {
-				Modules module = modulesService.getById(moduleRegistration.getIdModule().getId());
-				if (module == null) {
-					throw new Exception("Module tidak ada!");
-				} else {
-					if (moduleRegistration.getIdDetailClass() == null) {
-						throw new Exception("Detail kelas tidak boleh kosong!");
-					} else {
-						if (moduleRegistration.getIdDetailClass().getId() == null) {
-							throw new Exception("Id Detail Class tidak boleh kosong!");
-						} else {
-							DetailClasses dtlClazz = dtlClassesService
-									.getById(moduleRegistration.getIdDetailClass().getId());
-							if (dtlClazz == null) {
-								throw new Exception("Detail Class tidak ada!");
-							}
-						}
-					}
-				}
-			}
-		}
+		verifyNull(moduleRegistration.getIdModule(), "Module tidak boleh kosong!");
+		verifyNullAndEmptyString(moduleRegistration.getIdModule().getId(), "Id Module tidak boleh kosong!");
+
+		Modules module = modulesService.getById(moduleRegistration.getIdModule().getId());
+
+		verifyNull(module, "Module tidak ada!");
+		
+		verifyNull(moduleRegistration.getIdDetailClass(), "Detail kelas tidak boleh kosong!");
+		verifyNullAndEmptyString(moduleRegistration.getIdModule().getId(), "Id Detail Class tidak boleh kosong!");
+
+		DetailClasses dtlClazz = dtlClassesService.getById(moduleRegistration.getIdDetailClass().getId());
+
+		verifyNull(dtlClazz, "Detail Class tidak ada!");
 	}
 
 }

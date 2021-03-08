@@ -1,3 +1,4 @@
+
 package com.lawencon.elearning.service;
 
 import java.util.List;
@@ -9,12 +10,16 @@ import org.springframework.stereotype.Service;
 import com.lawencon.elearning.config.ElearningException;
 import com.lawencon.elearning.dao.SubmissionStatusDao;
 import com.lawencon.elearning.model.SubmissionStatus;
+import com.lawencon.elearning.model.Users;
 
 @Service
 public class SubmissionStatusServiceImpl extends ElearningBaseServiceImpl implements SubmissionStatusService {
 
 	@Autowired
 	private SubmissionStatusDao submissionStatusDao;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insert(SubmissionStatus submissionStatus) throws Exception {
@@ -33,6 +38,12 @@ public class SubmissionStatusServiceImpl extends ElearningBaseServiceImpl implem
 	public void deleteById(String id, String idUser) throws Exception {
 		try {
 			begin();
+			verifyNullAndEmptyString(id, "Id Submission Status tidak boleh kosong");
+			SubmissionStatus subStat = submissionStatusDao.getSubmissionStatusById(id);
+			verifyNull(subStat, "Id Submission Status tidak ada");
+			verifyNull(idUser, "Updated by tidak boleh kosong");
+			Users user = userService.getById(idUser);
+			verifyNull(user, "Id User tidak ada");
 			if (validateDelete(id)) {
 				submissionStatusDao.softDeleteSubmissionStatusById(id, idUser);
 			} else {
@@ -82,28 +93,21 @@ public class SubmissionStatusServiceImpl extends ElearningBaseServiceImpl implem
 //		}
 	}
 
-	private void validateUpdate(SubmissionStatus submissionStatus) throws Exception {
-		if (submissionStatus.getId() == null || submissionStatus.getId().trim().equals("")) {
-			throw new Exception("Id status tidak boleh kosong");
-		} else {
-			SubmissionStatus subStat = getById(submissionStatus.getId());
-			if (submissionStatus.getCode() == null || submissionStatus.getCode().trim().equals("")) {
-				throw new Exception("Kode status tidak boleh kosong");
-			} else {
-				if (!subStat.getCode().equals(submissionStatus.getCode())) {
-					SubmissionStatus submissionStat = getByCode(submissionStatus.getCode());
-					if (submissionStat != null) {
-						throw new Exception("Kode status sudah ada");
-					}
-				}
-				if (submissionStatus.getSubmissionStatusName() == null
-						|| submissionStatus.getSubmissionStatusName().trim().equals("")) {
-					throw new Exception("Nama status tidak boleh kosong");
-				}
-				if (submissionStatus.getVersion() != subStat.getVersion()) {
-					throw new Exception("Status yang diedit telah diperbarui, silahkan coba lagi");
-				}
-			}
+	private void validateUpdate(SubmissionStatus submissionStatus) throws Exception, ElearningException {
+		verifyNullAndEmptyString(submissionStatus.getId(), "Id status tidak boleh kosong");
+		
+		SubmissionStatus subStat = getById(submissionStatus.getId());
+		
+		verifyNullAndEmptyString(submissionStatus.getCode(), "Kode status tidak boleh kosong");
+		verifyNullAndEmptyString(submissionStatus.getSubmissionStatusName(), "Nama status tidak boleh kosong");
+		
+		if(!subStat.getCode().equalsIgnoreCase(submissionStatus.getCode())) {
+			SubmissionStatus submissionStat = getByCode(submissionStatus.getCode());
+			verifyNull(!verifyNull(submissionStat) ? null : false, "Kode status sudah ada");
+		}
+		
+		if (submissionStatus.getVersion() != subStat.getVersion()) {
+			throw new Exception("Status yang diedit telah diperbarui, silahkan coba lagi");
 		}
 	}
 

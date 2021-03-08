@@ -11,6 +11,7 @@ import com.lawencon.elearning.constant.TransactionNumberCode;
 import com.lawencon.elearning.dao.DetailModuleRegistrationsDao;
 import com.lawencon.elearning.helper.DetailModuleAndMaterialDoc;
 import com.lawencon.elearning.model.ApprovementsRenewal;
+import com.lawencon.elearning.model.DetailClasses;
 import com.lawencon.elearning.model.DetailModuleRegistrations;
 import com.lawencon.elearning.model.ModuleRegistrations;
 
@@ -26,6 +27,9 @@ public class DetailModuleRegistrationsServiceImpl extends ElearningBaseServiceIm
 
 	@Autowired
 	private ModuleRegistrationsService moduleRgsService;
+	
+	@Autowired
+	private DetailClassesService detailClassService;
 
 	@Override
 	public void insert(DetailModuleRegistrations dtlModuleRgs) throws Exception {
@@ -58,7 +62,10 @@ public class DetailModuleRegistrationsServiceImpl extends ElearningBaseServiceIm
 
 	@Override
 	public DetailModuleRegistrations getDtlModuleRgsById(String id) throws Exception {
-		return dtlModuleRgsDao.getDtlModuleRgsById(id);
+		verifyNullAndEmptyString(id, "Id Detail Module Registration tidak boleh kosong");
+		DetailModuleRegistrations dtlModule = dtlModuleRgsDao.getDtlModuleRgsById(id);
+		verifyNull(dtlModule, "Id Detail Module Registration tidak ada");
+		return dtlModule;
 	}
 
 	@Override
@@ -77,63 +84,53 @@ public class DetailModuleRegistrationsServiceImpl extends ElearningBaseServiceIm
 	}
 
 	private void validate(DetailModuleRegistrations dtlModRegist) throws Exception {
-		if (dtlModRegist.getIdLearningMaterial().getId() == null) {
-			throw new Exception("Id Learning Material tidak boleh kosong");
-		}
+		verifyNull(dtlModRegist.getIdLearningMaterial().getId(), "Id Learning Material tidak boleh kosong");
 	}
 
 	private void validateInsert(DetailModuleRegistrations dtlModRegist) throws Exception {
-		if (dtlModRegist.getIdModuleRegistration() != null) {
-			ModuleRegistrations moduleRgs = moduleRgsService.getById(dtlModRegist.getIdModuleRegistration().getId());
-			if (moduleRgs == null) {
-				throw new Exception("Id Module Registration salah");
-			}
-		} else {
-			throw new Exception("Id Module Registration tidak boleh kosong");
+		verifyNull(dtlModRegist.getIdModuleRegistration(), "Id Module Registration tidak boleh kosong");
+
+		ModuleRegistrations moduleRgs = moduleRgsService.getById(dtlModRegist.getIdModuleRegistration().getId());
+
+		verifyNull(moduleRgs, "Id Module Registration salah");
+
+		verifyNull(dtlModRegist.getScheduleDate(), "Jadwal materi tidak boleh kosong");
+
+		if (dtlModRegist.getScheduleDate().isAfter(moduleRgs.getIdDetailClass().getEndDate())) {
+			throw new Exception("Jadwal materi tidak bisa melewati masa berlangsung kelas");
 		}
-		if (dtlModRegist.getScheduleDate() != null) {
-			ModuleRegistrations moduleRgs = moduleRgsService.getById(dtlModRegist.getIdModuleRegistration().getId());
-			if (dtlModRegist.getScheduleDate().isAfter(moduleRgs.getIdDetailClass().getEndDate())) {
-				throw new Exception("Jadwal materi tidak bisa melewati masa berlangsung kelas");
-			}
-			if (dtlModRegist.getScheduleDate().isBefore(moduleRgs.getIdDetailClass().getStartDate())) {
-				throw new Exception("Jadwal materi tidak bisa mendahului masa berlangsung kelas");
-			}
-		} else {
-			throw new Exception("Jadwal materi tidak boleh kosong");
+		if (dtlModRegist.getScheduleDate().isBefore(moduleRgs.getIdDetailClass().getStartDate())) {
+			throw new Exception("Jadwal materi tidak bisa mendahului masa berlangsung kelas");
 		}
 	}
 
 	private void validateUpdate(DetailModuleRegistrations dtlModuleRgs) throws Exception {
-		if (dtlModuleRgs.getId() == null) {
-			throw new Exception("Id tidak boleh kosong");
-		}
-		if (dtlModuleRgs.getVersion() == null) {
-			throw new Exception("Version tidak boleh kosong");
-		} else {
-			DetailModuleRegistrations dm = dtlModuleRgsDao.getDtlModuleRgsById(dtlModuleRgs.getId());
-			if (dm.getVersion() != dtlModuleRgs.getVersion()) {
-				throw new Exception("Detail Module Registration version tidak sama!");
-			}
-		}
-		if (dtlModuleRgs.getScheduleDate() != null) {
-			if (dtlModuleRgs.getScheduleDate()
-					.isAfter(dtlModuleRgs.getIdModuleRegistration().getIdDetailClass().getEndDate())) {
-				throw new Exception("Jadwal materi tidak bisa melewati masa berlangsung kelas");
-			}
-			if (dtlModuleRgs.getScheduleDate()
-					.isBefore(dtlModuleRgs.getIdModuleRegistration().getIdDetailClass().getStartDate())) {
-				throw new Exception("Jadwal materi tidak bisa mendahului masa berlangsung kelas");
-			}
-		} else {
-			throw new Exception("Jadwal materi tidak boleh kosong");
+		verifyNull(dtlModuleRgs.getId(), "Id tidak boleh kosong");
+
+		verifyNull(dtlModuleRgs.getVersion(), "Version tidak boleh kosong");
+
+		DetailModuleRegistrations dm = dtlModuleRgsDao.getDtlModuleRgsById(dtlModuleRgs.getId());
+		if (dm.getVersion() != dtlModuleRgs.getVersion()) {
+			throw new Exception("Detail Module Registration version tidak sama!");
 		}
 
+		verifyNull(dtlModuleRgs.getScheduleDate(), "Jadwal materi tidak boleh kosong");
+		if (dtlModuleRgs.getScheduleDate()
+				.isAfter(dtlModuleRgs.getIdModuleRegistration().getIdDetailClass().getEndDate())) {
+			throw new Exception("Jadwal materi tidak bisa melewati masa berlangsung kelas");
+		}
+		if (dtlModuleRgs.getScheduleDate()
+				.isBefore(dtlModuleRgs.getIdModuleRegistration().getIdDetailClass().getStartDate())) {
+			throw new Exception("Jadwal materi tidak bisa mendahului masa berlangsung kelas");
+		}
 	}
 
 	@Override
 	public List<DetailModuleAndMaterialDoc> getAllModuleAndLearningMaterialByIdDetailClass(String idDetailClass)
 			throws Exception {
+		verifyNullAndEmptyString(idDetailClass, "Id Detail Class tidak boleh kosong");
+		DetailClasses dtlClass = detailClassService.getById(idDetailClass);
+		verifyNull(dtlClass, "Id Detail Class tidak ada");
 		List<DetailModuleRegistrations> list = dtlModuleRgsDao
 				.getAllModuleAndLearningMaterialsByIdDetailClass(idDetailClass);
 		List<DetailModuleAndMaterialDoc> listResult = new ArrayList<DetailModuleAndMaterialDoc>();

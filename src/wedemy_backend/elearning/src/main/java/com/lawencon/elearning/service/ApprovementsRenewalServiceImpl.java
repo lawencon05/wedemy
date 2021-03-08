@@ -11,6 +11,8 @@ import com.lawencon.elearning.constant.TransactionNumberCode;
 import com.lawencon.elearning.dao.ApprovementsRenewalDao;
 import com.lawencon.elearning.helper.TutorApprovementInputs;
 import com.lawencon.elearning.model.ApprovementsRenewal;
+import com.lawencon.elearning.model.DetailClasses;
+import com.lawencon.elearning.model.DetailModuleRegistrations;
 import com.lawencon.elearning.model.Presences;
 import com.lawencon.elearning.model.Users;
 
@@ -28,6 +30,12 @@ public class ApprovementsRenewalServiceImpl extends ElearningBaseServiceImpl imp
 
 	@Autowired
 	private PresencesService presenceService;
+	
+	@Autowired
+	private DetailClassesService detailClassService;
+	
+	@Autowired
+	private DetailModuleRegistrationsService detailModuleRgsService;
 
 	@Override
 	public void insertByParticipant(ApprovementsRenewal approvementsRenewal) throws Exception {
@@ -64,11 +72,20 @@ public class ApprovementsRenewalServiceImpl extends ElearningBaseServiceImpl imp
 	@Override
 	public List<ApprovementsRenewal> getAllParticipantPresences(String idDtlClass, String idDtlModuleRgs)
 			throws Exception {
+		verifyNullAndEmptyString(idDtlClass, "Id detail class tidak boleh kosong");
+		DetailClasses detailClass = detailClassService.getById(idDtlClass);
+		verifyNull(detailClass, "Id Detail Class tidak ada");
+		verifyNullAndEmptyString(idDtlModuleRgs, "Id Detail Module Registration tidak boleh kosong");
+		DetailModuleRegistrations dtlModuleRgs = detailModuleRgsService.getDtlModuleRgsById(idDtlModuleRgs);
+		verifyNull(dtlModuleRgs, "Id Detail Module Registration tidak ada");
 		return approvementsRenewalDao.getAllParticipantPresences(idDtlClass, idDtlModuleRgs);
 	}
 
 	@Override
 	public List<?> getPresenceReport(String idDetailClass) throws Exception {
+		verifyNullAndEmptyString(idDetailClass, "Id detail class tidak boleh kosong");
+		DetailClasses detailClass = detailClassService.getById(idDetailClass);
+		verifyNull(detailClass, "Id Detail Class tidak ada");
 		List<?> data = approvementsRenewalDao.getPresenceReport(idDetailClass);
 		validateReport(data);
 		return data;
@@ -76,9 +93,9 @@ public class ApprovementsRenewalServiceImpl extends ElearningBaseServiceImpl imp
 
 	private void validateInsert(ApprovementsRenewal approvementsRenewal) throws Exception {
 		Users user = usersService.getById(approvementsRenewal.getCreatedBy());
-		if (user == null) {
-			throw new Exception("CreatedBy bukan merupakan Id User yang valid");
-		}
+		
+		verifyNull(user, "CreatedBy bukan merupakan Id User yang valid");
+		
 		if (approvementsRenewal.getIdApprovement() == null) {
 			if (user.getIdRole().getCode().equals(RoleCode.TUTOR.code)) {
 				throw new Exception("Kode Approvement salah");
@@ -86,6 +103,7 @@ public class ApprovementsRenewalServiceImpl extends ElearningBaseServiceImpl imp
 				throw new Exception("Id Approvement tidak boleh kosong");
 			}
 		}
+		
 		if (approvementsRenewal.getIdPresence() != null && approvementsRenewal.getIdPresence().getId() != null) {
 			Presences presence = presenceService.getById(approvementsRenewal.getIdPresence().getId());
 			if (presence == null) {
@@ -94,6 +112,9 @@ public class ApprovementsRenewalServiceImpl extends ElearningBaseServiceImpl imp
 		} else {
 			throw new Exception("Id Presence tidak boleh kosong");
 		}
+		
+//		verifyNull((!verifyNull(approvementsRenewal.getIdPresence()) ? null : false) && 
+//				(!verifyNull(approvementsRenewal.getIdPresence().getId()) ? null : false), "");
 	}
 	
 	private void validateReport(List<?> data) throws Exception {

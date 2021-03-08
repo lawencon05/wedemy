@@ -1,5 +1,7 @@
 package com.lawencon.elearning.dao;
 
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import com.lawencon.elearning.model.Files;
@@ -20,7 +22,9 @@ public class FilesDaoImpl extends ElearningBaseDaoImpl<Files> implements FilesDa
 
 	@Override
 	public Files getFileById(String id) throws Exception {
-		return getById(id);
+		List<Files> files = createQuery("FROM Files WHERE id=?1", Files.class)
+				.setParameter(1, id).getResultList();
+		return resultCheck(files);
 	}
 
 }

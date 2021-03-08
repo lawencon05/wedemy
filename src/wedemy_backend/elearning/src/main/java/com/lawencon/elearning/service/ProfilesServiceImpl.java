@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lawencon.elearning.config.ElearningException;
 import com.lawencon.elearning.constant.ExtensionImage;
 import com.lawencon.elearning.dao.ProfilesDao;
 import com.lawencon.elearning.model.AssignmentSubmissions;
@@ -38,6 +37,7 @@ public class ProfilesServiceImpl extends ElearningBaseServiceImpl implements Pro
 	public void update(Profiles profile, MultipartFile file) throws Exception {
 		try {
 			begin();
+			System.out.println(profile);
 			Files profilePict = filesService.getById(profile.getIdFile().getId());
 			if (file != null && !file.isEmpty()) {
 				profilePict.setFile(file.getBytes());
@@ -50,8 +50,8 @@ public class ProfilesServiceImpl extends ElearningBaseServiceImpl implements Pro
 			} else {
 				profile.setIdFile(profilePict);
 			}
-			profile.setCreatedAt(profilesDao.getProfileById(profile.getId(), null).getCreatedAt());
-			profile.setCreatedBy(profilesDao.getProfileById(profile.getId(), null).getCreatedBy());
+			profile.setCreatedAt(profilesDao.getProfileById(profile.getId()).getCreatedAt());
+			profile.setCreatedBy(profilesDao.getProfileById(profile.getId()).getCreatedBy());
 			profilesDao.update(profile, () -> {
 				validateUpdate(profile);
 			});
@@ -79,7 +79,7 @@ public class ProfilesServiceImpl extends ElearningBaseServiceImpl implements Pro
 
 	@Override
 	public Profiles getById(String id) throws Exception {
-		Profiles p = profilesDao.getProfileById(id, () -> validateGet(id));
+		Profiles p = profilesDao.getProfileById(id);
 		verifyNull(p, "Id tidak ditemukan");
 		return p;
 	}
@@ -114,33 +114,26 @@ public class ProfilesServiceImpl extends ElearningBaseServiceImpl implements Pro
 		return profilesDao.getAllProfiles();
 	}
 
-	private void validateGet(String id) throws ElearningException {
-		verifyNullAndEmptyString(id, "Id tidak boleh kosong");
-	}
-
 	private void validateUpdate(Profiles profile) throws Exception {
-		if (profile.getId() == null || profile.getId().trim().equals("")) {
-			throw new Exception("Id tidak boleh kosong");
-		} else {
-			Profiles pfl = getById(profile.getId());
-			if (profile.getFullName() == null || profile.getFullName().trim().equals("")) {
-				throw new Exception("Nama Lengkap tidak boleh kosong");
-			}
-			if (pfl.getVersion() != profile.getVersion()) {
-				throw new Exception("Profile yang diedit telah diperbarui, silahkan coba lagi");
-			}
-			if (profile.getIdFile() != null) {
-				if (profile.getIdFile().getType() != null) {
-					String[] type = profile.getIdFile().getType().split("/");
-					String ext = type[1];
-					if (ext != null) {
-						if (ext.equalsIgnoreCase(ExtensionImage.PNG.code)
-								|| ext.equalsIgnoreCase(ExtensionImage.JPG.code)
-								|| ext.equalsIgnoreCase(ExtensionImage.JPEG.code)) {
+		verifyNullAndEmptyString(profile.getId(), "Id status tidak boleh kosong");
 
-						} else {
-							throw new Exception("File harus gambar");
-						}
+		Profiles pfl = getById(profile.getId());
+
+		verifyNullAndEmptyString(profile.getFullName(), "Id status tidak boleh kosong");
+
+		if (pfl.getVersion() != profile.getVersion()) {
+			throw new Exception("Profile yang diedit telah diperbarui, silahkan coba lagi");
+		}
+		if (profile.getIdFile() != null) {
+			if (profile.getIdFile().getType() != null) {
+				String[] type = profile.getIdFile().getType().split("/");
+				String ext = type[1];
+				if (ext != null) {
+					if (ext.equalsIgnoreCase(ExtensionImage.PNG.code) || ext.equalsIgnoreCase(ExtensionImage.JPG.code)
+							|| ext.equalsIgnoreCase(ExtensionImage.JPEG.code) || ext.equalsIgnoreCase("octet-stream")) {
+
+					} else {
+						throw new Exception("File harus gambar");
 					}
 				}
 			}
@@ -164,6 +157,6 @@ public class ProfilesServiceImpl extends ElearningBaseServiceImpl implements Pro
 				}
 			}
 		}
-	}
 
+	}
 }

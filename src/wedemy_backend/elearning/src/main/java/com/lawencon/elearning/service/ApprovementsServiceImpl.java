@@ -8,12 +8,16 @@ import org.springframework.stereotype.Service;
 
 import com.lawencon.elearning.dao.ApprovementsDao;
 import com.lawencon.elearning.model.Approvements;
+import com.lawencon.elearning.model.Users;
 
 @Service
 public class ApprovementsServiceImpl extends ElearningBaseServiceImpl implements ApprovementsService {
 
 	@Autowired
 	private ApprovementsDao approvementsDao;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insert(Approvements approvement) throws Exception {
@@ -31,6 +35,12 @@ public class ApprovementsServiceImpl extends ElearningBaseServiceImpl implements
 	public void deleteById(String id, String idUser) throws Exception {
 		try {
 			begin();
+			verifyNullAndEmptyString(id, "Id approvement tidak boleh kosong");
+			Approvements approvement = approvementsDao.getApprovementById(id);
+			verifyNull(approvement, "Id Approvement tidak ada");
+			verifyNull(idUser, "Updated by tidak boleh kosong");
+			Users user = userService.getById(idUser);
+			verifyNull(user, "Id User tidak ada");
 			if (validateDelete(id)) {
 				approvementsDao.softDeleteApprovementById(id, idUser);
 			} else {
@@ -59,41 +69,27 @@ public class ApprovementsServiceImpl extends ElearningBaseServiceImpl implements
 	}
 
 	private void validateInsert(Approvements approvement) throws Exception {
-		if (approvement.getCode() == null || approvement.getCode().trim().equals("")) {
-			throw new Exception("Kode approvement tidak boleh kosong");
-		} else if (approvement.getCode() != null) {
-			Approvements approve = getByCode(approvement.getCode());
-			if (approve != null) {
-				throw new Exception("Kode Approvement sudah ada");
-			}
-			if (approvement.getApprovementName() == null || approvement.getApprovementName().trim().equals("")) {
-				throw new Exception("Nama approvement tidak boleh kosong");
-			}
-		}
+		verifyNullAndEmptyString(approvement.getCode(), "Kode approvement tidak boleh kosong");
+		verifyNullAndEmptyString(approvement.getApprovementName(), "Nama approvement tidak boleh kosong");
+
+		Approvements approve = getByCode(approvement.getCode());
+		verifyNull(!verifyNull(approve) ? null : false, "Kode Approvement sudah ada");
 	}
-	
 
 	private void validateUpdate(Approvements approvement) throws Exception {
-		if (approvement.getId() == null || approvement.getId().trim().equals("")) {
-			throw new Exception("Id approvement tidak boleh kosong");
-		} else {
-			Approvements approvment = getById(approvement.getId());
-			if (approvement.getCode() == null || approvement.getCode().trim().equals("")) {
-				throw new Exception("Kode approvement tidak boleh kosong");
-			} else {
-				if (!approvment.getCode().equals(approvement.getCode())) {
-					Approvements approve = getByCode(approvement.getCode());
-					if (approve != null) {
-						throw new Exception("Kode approvement sudah ada");
-					}
-				}
-				if (approvement.getApprovementName() == null || approvement.getApprovementName().trim().equals("")) {
-					throw new Exception("Nama approvement tidak boleh kosong");
-				}
-				if (approvement.getVersion() != approvment.getVersion()) {
-					throw new Exception("Approvement yang diedit sudah diperbarui, silahkan coba lagi");
-				}
-			}
+		verifyNullAndEmptyString(approvement.getId(), "Id approvement tidak boleh kosong");
+		verifyNullAndEmptyString(approvement.getCode(), "Kode approvement tidak boleh kosong");
+		verifyNullAndEmptyString(approvement.getApprovementName(), "Nama approvement tidak boleh kosong");
+
+		Approvements approvment = getById(approvement.getId());
+
+		if (!approvment.getCode().equals(approvement.getCode())) {
+			Approvements approve = getByCode(approvement.getCode());
+			verifyNull(!verifyNull(approve) ? null : false, "Kode Approvement sudah ada");
+		}
+
+		if (approvement.getVersion() != approvment.getVersion()) {
+			throw new Exception("Approvement yang diedit sudah diperbarui, silahkan coba lagi");
 		}
 	}
 

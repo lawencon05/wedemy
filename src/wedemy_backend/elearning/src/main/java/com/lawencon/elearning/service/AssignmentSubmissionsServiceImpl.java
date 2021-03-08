@@ -115,6 +115,12 @@ public class AssignmentSubmissionsServiceImpl extends ElearningBaseServiceImpl i
 	@Override
 	public AssignmentSubmissions getByIdDtlModuleRgsAndIdParticipant(String idDtlModuleRgs, String idParticipant)
 			throws Exception {
+		verifyNullAndEmptyString(idDtlModuleRgs, "Id Detail Module Registration tidak boleh kosong");
+		DetailModuleRegistrations detailModuleRgs = dtlModuleRgsService.getDtlModuleRgsById(idDtlModuleRgs);
+		verifyNull(detailModuleRgs, "Id Detail Module Registration tidak ada");
+		verifyNullAndEmptyString(idParticipant, "Id Participant tidak boleh kosong");
+		Users user = usersService.getById(idParticipant);
+		verifyNull(user, "Id Participant tidak ada");
 		return assignmentSubmissionsDao.getByIdDtlModuleRgsAndIdParticipant(idDtlModuleRgs, idParticipant);
 	}
 
@@ -177,10 +183,7 @@ public class AssignmentSubmissionsServiceImpl extends ElearningBaseServiceImpl i
 	}
 
 	private void validateInsert(AssignmentSubmissions assignmentSubmissions) throws Exception {
-		if (assignmentSubmissions.getIdFile().getName() == null
-				|| assignmentSubmissions.getIdFile().getName().trim().equals("")) {
-			throw new Exception("File tidak boleh kosong");
-		}
+		verifyNullAndEmptyString(assignmentSubmissions.getIdFile().getName(), "File tidak boleh kosong");
 	}
 
 	private void validateUpdate(AssignmentSubmissions assignmentSubmissions) throws Exception {
@@ -193,6 +196,7 @@ public class AssignmentSubmissionsServiceImpl extends ElearningBaseServiceImpl i
 		} else {
 			throw new Exception("Id Assignment Submission tidak boleh kosong");
 		}
+		
 		if (assignmentSubmissions.getVersion() != null) {
 			AssignmentSubmissions submission = assignmentSubmissionsDao
 					.getSubmissionById(assignmentSubmissions.getId());
@@ -202,9 +206,8 @@ public class AssignmentSubmissionsServiceImpl extends ElearningBaseServiceImpl i
 		} else {
 			throw new Exception("Version tidak boleh kosong");
 		}
-		if (assignmentSubmissions.getIdFile() == null) {
-			throw new Exception("Id File salah");
-		}
+		
+		verifyNull(assignmentSubmissions.getIdFile() , "Id File salah");
 	}
 
 }

@@ -10,7 +10,7 @@ public interface DetailForumsDao {
 	
 	List<DetailForums> getAllDetailForums() throws Exception;
 	
-	DetailForums getDetailForumById(String id) throws Exception;
+	DetailForums getDetailForumById(String id, Callback before) throws Exception;
 	
 	void softDeleteDetailForumById(String id, String idUser) throws Exception;
 	

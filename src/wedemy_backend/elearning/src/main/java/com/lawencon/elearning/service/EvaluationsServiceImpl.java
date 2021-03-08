@@ -11,11 +11,15 @@ import com.lawencon.elearning.constant.TransactionNumberCode;
 import com.lawencon.elearning.dao.EvaluationsDao;
 import com.lawencon.elearning.helper.ScoreInputs;
 import com.lawencon.elearning.model.AssignmentSubmissions;
+import com.lawencon.elearning.model.Classes;
+import com.lawencon.elearning.model.DetailClasses;
+import com.lawencon.elearning.model.DetailModuleRegistrations;
 import com.lawencon.elearning.model.Evaluations;
 import com.lawencon.elearning.model.General;
 import com.lawencon.elearning.model.Grades;
 import com.lawencon.elearning.model.Profiles;
 import com.lawencon.elearning.model.SubmissionStatusRenewal;
+import com.lawencon.elearning.model.Users;
 
 @Service
 public class EvaluationsServiceImpl extends ElearningBaseServiceImpl implements EvaluationsService {
@@ -40,6 +44,18 @@ public class EvaluationsServiceImpl extends ElearningBaseServiceImpl implements 
 
 	@Autowired
 	private GeneralService generalService;
+	
+	@Autowired
+	private DetailClassesService detailClassService;
+	
+	@Autowired
+	private DetailModuleRegistrationsService detailModuleRgsService;
+	
+	@Autowired
+	private ClassesService classService;
+	
+	@Autowired
+	private UsersService userService;
 
 	@Override
 	public void insertEvaluation(ScoreInputs scores) throws Exception {
@@ -95,6 +111,12 @@ public class EvaluationsServiceImpl extends ElearningBaseServiceImpl implements 
 	@Override
 	public List<Evaluations> getAllByIdDtlClassAndIdDtlModuleRgs(String idDtlClass, String idDtlModuleRgs)
 			throws Exception {
+		verifyNullAndEmptyString(idDtlClass, "Id Detail Class tidak boleh kosong");
+		DetailClasses detailClass = detailClassService.getById(idDtlClass);
+		verifyNull(detailClass, "Id Detail Class tidak ada");
+		verifyNullAndEmptyString(idDtlModuleRgs, "Id Detail Class tidak boleh kosong");
+		DetailModuleRegistrations detailModuleRgs = detailModuleRgsService.getDtlModuleRgsById(idDtlModuleRgs);
+		verifyNull(detailModuleRgs, "Id Detail Module Registration tidak ada");
 		return evaluationsDao.getAllByIdDtlClassAndIdDtlModuleRgs(idDtlClass, idDtlModuleRgs);
 	}
 
@@ -112,43 +134,36 @@ public class EvaluationsServiceImpl extends ElearningBaseServiceImpl implements 
 	}
 
 	private void validate(Evaluations evaluation) throws Exception {
-		if (evaluation.getIdAssignmentSubmission() != null && evaluation.getIdAssignmentSubmission().getId() != null) {
-			AssignmentSubmissions submission = assignmentSubmissionsService
-					.getById(evaluation.getIdAssignmentSubmission().getId());
-			if (submission == null) {
-				throw new Exception("Id Assignment Submission salah");
-			}
-		} else {
-			throw new Exception("Id Assignment Submission tidak boleh kosong");
-		}
-		if (evaluation.getIdGrade() == null) {
-			throw new Exception("Score harus dalam rentang 0 - 100");
-		}
+		verifyNull(evaluation.getIdAssignmentSubmission(), "Assignment Submission tidak boleh kosong");
+		verifyNull(evaluation.getIdAssignmentSubmission().getId(), "Id Assignment Submission tidak boleh kosong");
+
+		AssignmentSubmissions submission = assignmentSubmissionsService
+				.getById(evaluation.getIdAssignmentSubmission().getId());
+
+		verifyNull(submission, "Id Assignment Submission salah");
+
+		verifyNull(evaluation.getIdGrade(), "Score harus dalam rentang 0 - 100");
+
+		verifyNull(evaluation.getScore(), "Score tidak boleh kosong");
+
 		if (evaluation.getScore() != null) {
 			if (evaluation.getScore() < 0 || evaluation.getScore() > 100) {
 				throw new Exception("Score harus dalam rentang 0 - 100");
 			}
-		} else {
-			throw new Exception("Score tidak boleh kosong");
 		}
 	}
 
 	private void validateUpdate(Evaluations evaluation) throws Exception {
-		if (evaluation.getId() != null) {
-			Evaluations eval = evaluationsDao.getEvaluationById(evaluation.getId());
-			if (eval == null) {
-				throw new Exception("Id Evaluation salah");
-			}
-		} else {
-			throw new Exception("Id Evaluation tidak boleh kosong");
-		}
-		if (evaluation.getVersion() != null) {
-			Evaluations eval = evaluationsDao.getEvaluationById(evaluation.getId());
-			if (!evaluation.getVersion().equals(eval.getVersion())) {
-				throw new Exception("Version tidak sama dengan sebelumnya");
-			}
-		} else {
-			throw new Exception("Version tidak boleh kosong");
+		verifyNull(evaluation.getId(), "Id Evaluation tidak boleh kosong");
+
+		Evaluations eval = evaluationsDao.getEvaluationById(evaluation.getId());
+
+		verifyNull(eval, "Id Evaluation salah");
+
+		verifyNull(evaluation.getId(), "Version tidak boleh kosong");
+
+		if (!evaluation.getVersion().equals(eval.getVersion())) {
+			throw new Exception("Version tidak sama dengan sebelumnya");
 		}
 	}
 
@@ -165,12 +180,21 @@ public class EvaluationsServiceImpl extends ElearningBaseServiceImpl implements 
 
 	@Override
 	public List<?> reportAllScore(String idClass) throws Exception {
+		verifyNullAndEmptyString(idClass, "Id Class tidak boleh kosong");
+		Classes clazz = classService.getById(idClass);
+		verifyNull(clazz, "Id Class tidak ada");
 		List<?> data = evaluationsDao.reportAllScore(idClass);
 		return data;
 	}
 
 	@Override
 	public List<?> reportScore(String idDtlClass, String idParticipant) throws Exception {
+		verifyNullAndEmptyString(idDtlClass, "Id Detail Class tidak boleh kosong");
+		DetailClasses detailClass = detailClassService.getById(idDtlClass);
+		verifyNull(detailClass, "Id Detail Class tidak ada");
+		verifyNullAndEmptyString(idParticipant, "Id Participant tidak boleh kosong");
+		Users user = userService.getById(idParticipant);
+		verifyNull(user, "Id Participant tidak ada");
 		List<?> data = evaluationsDao.reportScore(idDtlClass, idParticipant);
 		validateReport(data);
 		return data;
@@ -178,6 +202,12 @@ public class EvaluationsServiceImpl extends ElearningBaseServiceImpl implements 
 
 	@Override
 	public List<?> getCertificate(String idUser, String idDetailClass) throws Exception {
+		verifyNullAndEmptyString(idDetailClass, "Id Detail Class tidak boleh kosong");
+		DetailClasses detailClass = detailClassService.getById(idDetailClass);
+		verifyNull(detailClass, "Id Detail Class tidak ada");
+		verifyNullAndEmptyString(idUser, "Id User tidak boleh kosong");
+		Users user = userService.getById(idUser);
+		verifyNull(user, "Id User tidak ada");
 		List<?> data = evaluationsDao.getCertificate(idUser, idDetailClass);
 		validateReport(data);
 		return data;

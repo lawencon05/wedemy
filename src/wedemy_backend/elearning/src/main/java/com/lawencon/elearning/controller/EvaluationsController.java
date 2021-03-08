@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.helper.Jasper;
 import com.lawencon.elearning.helper.ScoreInputs;
@@ -38,10 +37,8 @@ public class EvaluationsController extends ElearningBaseController {
 	private UsersService usersService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody ScoreInputs scores) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			ScoreInputs scores = obj.readValue(body, ScoreInputs.class);
 			evaluationsService.insertEvaluation(scores);
 			return responseSuccess(scores, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {
@@ -125,10 +122,8 @@ public class EvaluationsController extends ElearningBaseController {
 	}
 
 	@PatchMapping
-	public ResponseEntity<?> update(@RequestBody String body) {
+	public ResponseEntity<?> update(@RequestBody ScoreInputs scores) {
 		try {
-			ObjectMapper obj = new ObjectMapper();
-			ScoreInputs scores = obj.readValue(body, ScoreInputs.class);
 			evaluationsService.updateEvaluation(scores);
 			return responseSuccess(scores, HttpStatus.OK, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {

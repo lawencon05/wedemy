@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lawencon.elearning.constant.MessageStat;
 import com.lawencon.elearning.model.SubmissionStatus;
 import com.lawencon.elearning.service.SubmissionStatusService;
@@ -27,9 +26,8 @@ public class SubmissionStatusController extends ElearningBaseController {
 	private SubmissionStatusService submissionStatusService;
 
 	@PostMapping
-	public ResponseEntity<?> insert(@RequestBody String body) {
+	public ResponseEntity<?> insert(@RequestBody SubmissionStatus submissionStatus) {
 		try {
-			SubmissionStatus submissionStatus = new ObjectMapper().readValue(body, SubmissionStatus.class);
 			submissionStatusService.insert(submissionStatus);
 			return responseSuccess(submissionStatus, HttpStatus.CREATED, MessageStat.SUCCESS_CREATED);
 		} catch (Exception e) {
@@ -50,9 +48,8 @@ public class SubmissionStatusController extends ElearningBaseController {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestBody String body) {
+	public ResponseEntity<?> update(@RequestBody SubmissionStatus submissionStatus) {
 		try {
-			SubmissionStatus submissionStatus = new ObjectMapper().readValue(body, SubmissionStatus.class);
 			submissionStatusService.update(submissionStatus);
 			SubmissionStatus response = submissionStatusService.getById(submissionStatus.getId());
 			return responseSuccess(response, HttpStatus.OK, MessageStat.SUCCESS_UPDATE);

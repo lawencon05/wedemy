@@ -34,7 +34,7 @@ public class DetailForumsDaoImpl extends ElearningBaseDaoImpl<DetailForums> impl
 	}
 
 	@Override
-	public DetailForums getDetailForumById(String id) throws Exception {
+	public DetailForums getDetailForumById(String id, Callback before) throws Exception {
 		return getById(id);
 	}
 

@@ -36,13 +36,6 @@ public class BaseDaoImpl<T extends Serializable> {
 	protected T getById(final String id) throws Exception {
 		return em().find(clazz, id);
 	}
-	
-	protected T getById(final String id, Callback before) throws Exception {
-		if (before != null)
-			before.exec();
-		
-		return em().find(clazz, id);
-	}
 
 	protected List<T> getAll() {
 		return em().createQuery("FROM " + clazz.getName(), clazz).getResultList();
